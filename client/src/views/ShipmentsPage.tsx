@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
+import { Package, Clock, Truck, CheckCircle2 } from 'lucide-react';
 import { useQuery } from '@apollo/client/react';
 import { GET_SHIPMENTS } from '../graphql/queries';
 import type { Shipment, ViewMode, UserRole } from '../types';
@@ -60,11 +61,35 @@ export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, 
       </div>
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        <StatCard label="Total" value={shipments.length.toString()} accent="text-slate-900" />
-        <StatCard label="Pending" value={shipments.filter(s => s.status === 'PENDING').length.toString()} accent="text-amber-500" />
-        <StatCard label="In Transit" value={shipments.filter(s => s.status === 'IN_TRANSIT').length.toString()} accent="text-blue-600" />
-        <StatCard label="Delivered" value={shipments.filter(s => s.status === 'DELIVERED').length.toString()} accent="text-emerald-600" />
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <StatCard 
+          label="Total" 
+          value={shipments.length.toString()} 
+          icon={<Package size={16} />}
+          trendText="Across all facilities"
+          trendIndicatorClass="bg-slate-300"
+        />
+        <StatCard 
+          label="Pending" 
+          value={shipments.filter((s: Shipment) => s.status === 'PENDING').length.toString()} 
+          icon={<Clock size={16} />}
+          trendText="Needs assignment"
+          trendIndicatorClass="bg-amber-400"
+        />
+        <StatCard 
+          label="In Transit" 
+          value={shipments.filter((s: Shipment) => s.status === 'IN_TRANSIT').length.toString()} 
+          icon={<Truck size={16} />}
+          trendText="Currently moving"
+          trendIndicatorClass="bg-indigo-500"
+        />
+        <StatCard 
+          label="Delivered" 
+          value={shipments.filter((s: Shipment) => s.status === 'DELIVERED').length.toString()} 
+          icon={<CheckCircle2 size={16} />}
+          trendText="Successfully completed"
+          trendIndicatorClass="bg-emerald-500"
+        />
       </div>
 
       {/* View Content */}
@@ -102,11 +127,32 @@ export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, 
   );
 }
 
-function StatCard({ label, value, accent }: { label: string; value: string; accent: string }) {
+function StatCard({ 
+  label, 
+  value, 
+  icon, 
+  trendText, 
+  trendIndicatorClass 
+}: { 
+  label: string; 
+  value: string; 
+  icon: React.ReactNode; 
+  trendText?: string; 
+  trendIndicatorClass?: string 
+}) {
   return (
-    <div className="rounded-xl bg-white px-4 py-3.5 border border-slate-200/60 shadow-sm">
-      <p className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">{label}</p>
-      <p className={`mt-1 text-2xl font-bold ${accent}`}>{value}</p>
+    <div className="flex flex-col rounded-xl bg-white px-5 py-4 border border-slate-200/70 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+      <div className="flex items-center gap-2 mb-2">
+        <div className="text-slate-400">{icon}</div>
+        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">{label}</p>
+      </div>
+      <p className="text-3xl font-bold text-slate-900 tracking-tight">{value}</p>
+      {trendText && (
+        <div className="mt-3 flex items-center gap-1.5">
+          <span className={`h-1.5 w-1.5 rounded-full ${trendIndicatorClass}`} />
+          <span className="text-[11px] font-medium text-slate-500">{trendText}</span>
+        </div>
+      )}
     </div>
   );
 }
