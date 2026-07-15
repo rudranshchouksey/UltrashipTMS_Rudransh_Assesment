@@ -11,9 +11,13 @@ interface ShipmentsPageProps {
   shipments: Shipment[];
   viewMode: ViewMode;
   userRole: UserRole;
+  searchQuery: string;
+  onClearFilters: () => void;
 }
 
-export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, userRole }: ShipmentsPageProps) {
+import EmptyState from '../components/EmptyState';
+
+export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, userRole, searchQuery, onClearFilters }: ShipmentsPageProps) {
   const [selectedShipment, setSelectedShipment] = useState<Shipment | null>(null);
 
   const { data } = useQuery<any>(GET_SHIPMENTS, {
@@ -22,7 +26,20 @@ export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, 
   });
 
   // Extract from GraphQL response, fallback to mock data if not available
-  const shipments = data?.shipments?.edges?.map((e: any) => e.node) || fallbackShipments;
+  const baseShipments = data?.shipments?.edges?.map((e: any) => e.node) || fallbackShipments;
+
+  // Apply search filter
+  const shipments = baseShipments.filter((s: Shipment) => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      s.id.toLowerCase().includes(q) ||
+      s.trackingNumber.toLowerCase().includes(q) ||
+      s.shipper.name.toLowerCase().includes(q) ||
+      s.carrier.name.toLowerCase().includes(q) ||
+      s.status.toLowerCase().includes(q)
+    );
+  });
 
   const handleSelectShipment = useCallback((shipment: Shipment) => {
     setSelectedShipment(shipment);
@@ -52,7 +69,9 @@ export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, 
 
       {/* View Content */}
       <AnimatePresence mode="wait">
-        {viewMode === 'grid' ? (
+        {shipments.length === 0 ? (
+          <EmptyState key="empty" onClearFilters={onClearFilters} />
+        ) : viewMode === 'grid' ? (
           <DataGrid
             key="grid"
             shipments={shipments}

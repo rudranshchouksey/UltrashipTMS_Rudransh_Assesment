@@ -17,6 +17,8 @@ interface TopNavProps {
   onViewModeChange: (mode: ViewMode) => void;
   userRole: UserRole;
   onRoleToggle: () => void;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
 }
 
 export default function TopNav({
@@ -25,6 +27,8 @@ export default function TopNav({
   onViewModeChange,
   userRole,
   onRoleToggle,
+  searchQuery,
+  onSearchChange,
 }: TopNavProps) {
   return (
     <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-200/80">
@@ -43,6 +47,8 @@ export default function TopNav({
           <input
             type="text"
             placeholder="Search shipments, carriers, tracking..."
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
             className="w-full rounded-xl bg-white py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-400 outline-none border border-slate-200 transition-all duration-200 focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 shadow-sm"
           />
         </div>

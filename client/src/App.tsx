@@ -8,6 +8,7 @@ import type { ViewMode, UserRole } from './types';
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [searchQuery, setSearchQuery] = useState('');
   const [userRole, setUserRole] = useState<UserRole>(() => {
     return (localStorage.getItem('userRole') as UserRole) || 'ADMIN';
   });
@@ -36,11 +37,19 @@ function App() {
           onViewModeChange={setViewMode}
           userRole={userRole}
           onRoleToggle={toggleRole}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
         />
 
         {/* Content */}
         <main className="flex-1 overflow-y-auto">
-          <ShipmentsPage shipments={mockShipments} viewMode={viewMode} userRole={userRole} />
+          <ShipmentsPage 
+            shipments={mockShipments} 
+            viewMode={viewMode} 
+            userRole={userRole}
+            searchQuery={searchQuery}
+            onClearFilters={() => setSearchQuery('')}
+          />
         </main>
       </div>
     </div>
