@@ -40,17 +40,17 @@ export default function DataGrid({ shipments, onSelectShipment }: DataGridProps)
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -6 }}
       transition={{ duration: 0.2 }}
-      className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden"
+      className="rounded-xl bg-white border border-slate-200/80 shadow-sm overflow-hidden"
     >
       <div className="overflow-x-auto">
         <table className="w-full min-w-[1200px]">
           {/* Sticky Header */}
-          <thead className="bg-slate-50/75 border-b border-slate-200/80">
+          <thead className="bg-slate-50/80 border-b border-slate-200">
             <tr>
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className={`sticky top-0 z-10 px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-slate-400 ${col.width} ${col.align}`}
+                  className={`sticky top-0 z-10 px-6 py-3.5 text-[11px] font-bold uppercase tracking-wider text-slate-400 ${col.width} ${col.align}`}
                 >
                   {col.label}
                 </th>
@@ -67,12 +67,12 @@ export default function DataGrid({ shipments, onSelectShipment }: DataGridProps)
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.03, duration: 0.2 }}
                 onClick={() => onSelectShipment(shipment)}
-                className="group cursor-pointer transition-colors duration-150 hover:bg-slate-50/50 bg-white"
+                className="group cursor-pointer transition-colors duration-150 hover:bg-slate-50/60 bg-white text-sm text-slate-700"
               >
                 {/* ID */}
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-1.5">
-                    <span className="font-semibold text-sm text-indigo-600 hover:text-indigo-700">
+                    <span className="font-semibold text-blue-600 hover:underline">
                       #{truncateId(shipment.id)}
                     </span>
                     <button className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-slate-900">
@@ -88,14 +88,14 @@ export default function DataGrid({ shipments, onSelectShipment }: DataGridProps)
 
                 {/* Shipper */}
                 <td className="px-6 py-4">
-                  <p className="text-sm font-medium text-slate-800 truncate max-w-[140px]">{shipment.shipper.name}</p>
+                  <p className="font-medium text-slate-900 truncate max-w-[140px]">{shipment.shipper.name}</p>
                 </td>
 
                 {/* Carrier */}
                 <td className="px-6 py-4">
                   <div>
-                    <p className="text-sm font-medium text-slate-800 truncate max-w-[130px]">{shipment.carrier.name}</p>
-                    <p className="text-xs text-slate-400 font-mono">{shipment.carrier.scacCode}</p>
+                    <p className="font-medium text-slate-900 truncate max-w-[130px]">{shipment.carrier.name}</p>
+                    <p className="text-xs text-slate-400">{shipment.carrier.scacCode}</p>
                   </div>
                 </td>
 
@@ -123,7 +123,7 @@ export default function DataGrid({ shipments, onSelectShipment }: DataGridProps)
 
                 {/* Rate */}
                 <td className="px-6 py-4 text-right">
-                  <span className="font-mono font-semibold text-slate-900">{formatCurrency(shipment.rates.totalRate)}</span>
+                  <span className="font-mono font-bold text-slate-900">{formatCurrency(shipment.rates.totalRate)}</span>
                 </td>
 
                 {/* Pickup Date */}

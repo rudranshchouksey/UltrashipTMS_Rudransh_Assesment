@@ -17,6 +17,7 @@ interface ShipmentsPageProps {
 }
 
 import EmptyState from '../components/EmptyState';
+import QuickActionsToolbar from '../components/QuickActionsToolbar';
 
 export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, userRole, searchQuery, onClearFilters }: ShipmentsPageProps) {
   const [selectedShipment, setSelectedShipment] = useState<Shipment | null>(null);
@@ -59,6 +60,9 @@ export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, 
           Manage and track all shipment activity across your logistics network.
         </p>
       </div>
+
+      {/* Quick Actions */}
+      <QuickActionsToolbar />
 
       {/* Summary Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
