@@ -168,10 +168,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         variants={sidebarVariants}
         initial="closed"
         animate={isOpen ? 'open' : 'closed'}
-        className="fixed left-0 top-0 z-50 flex h-full w-72 flex-col bg-white border-r border-slate-200/80 lg:relative lg:z-auto lg:translate-x-0"
+        className="fixed left-0 top-0 z-50 flex h-full w-72 flex-col bg-white border-r border-slate-200/60 lg:relative lg:z-auto lg:translate-x-0"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-200/80 px-5 py-5">
+        <div className="flex items-center justify-between border-b border-slate-200/60 px-5 py-5">
           <div className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg gradient-accent shadow-lg">
               <Boxes size={18} className="text-white" />
@@ -197,7 +197,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-slate-200/80 px-5 py-4">
+        <div className="border-t border-slate-200/60 px-5 py-4">
           <div className="rounded-lg bg-slate-50 p-3 border border-slate-200/60 shadow-sm">
             <p className="text-xs font-semibold text-slate-800">Pro Plan Active</p>
             <p className="mt-0.5 text-[11px] text-slate-500">Unlimited shipments</p>

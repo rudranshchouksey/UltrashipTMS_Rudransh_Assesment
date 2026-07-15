@@ -50,7 +50,7 @@ export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, 
   }, []);
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="p-4 sm:p-8 lg:p-10">
       {/* Page Header */}
       <div className="mb-6">
         <h2 className="text-xl font-bold text-slate-900 tracking-tight">Shipments</h2>

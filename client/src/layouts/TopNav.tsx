@@ -31,12 +31,12 @@ export default function TopNav({
   onSearchChange,
 }: TopNavProps) {
   return (
-    <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-200/80">
+    <header className="sticky top-0 z-30 bg-white border-b border-slate-200/60">
       <div className="flex h-16 items-center gap-4 px-4 lg:px-6">
         {/* Hamburger */}
         <button
           onClick={onToggleSidebar}
-          className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
+          className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
         >
           <Menu size={20} />
         </button>
@@ -49,7 +49,7 @@ export default function TopNav({
             placeholder="Search shipments, carriers, tracking..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full rounded-xl bg-white py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-400 outline-none border border-slate-200 transition-all duration-200 focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 shadow-sm"
+            className="h-10 w-full rounded-xl bg-white pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-400 outline-none border border-slate-200 transition-all duration-200 focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 shadow-sm"
           />
         </div>
 
