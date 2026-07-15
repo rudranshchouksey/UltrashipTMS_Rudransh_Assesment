@@ -31,7 +31,7 @@ export default function DashboardLayout({
   const closeSidebar = useCallback(() => setIsSidebarOpen(false), []);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 relative">
+    <div className="flex h-screen overflow-hidden bg-[#f4f7fa] relative">
       {/* Mobile Overlay */}
       <AnimatePresence>
         {isSidebarOpen && (
@@ -53,9 +53,9 @@ export default function DashboardLayout({
           width: isSidebarOpen ? 288 : 64,
         }}
         transition={springTransition}
-        className="flex-shrink-0 z-50 h-full bg-white absolute lg:relative z-50"
+        className="flex-shrink-0 z-50 h-full bg-[#0f172a] absolute lg:relative z-50"
       >
-        <div className="w-full h-full flex flex-col border-r border-slate-200/60 overflow-visible">
+        <div className="w-full h-full flex flex-col border-r border-slate-800 overflow-visible">
           <SidebarContent onClose={closeSidebar} isOpen={isSidebarOpen} />
         </div>
       </motion.aside>

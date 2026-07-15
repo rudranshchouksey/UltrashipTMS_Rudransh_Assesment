@@ -86,15 +86,18 @@ function MenuItemGroup({ group, isOpen }: { group: MenuGroup, isOpen: boolean })
     return (
       <div className="group relative">
         <button
-          className={`flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200
+          className={`flex w-full items-center rounded-lg py-2.5 text-sm font-medium transition-all duration-200 relative overflow-hidden
             ${group.active
-              ? 'bg-accent-50 text-accent-600'
-              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+              ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-md'
+              : 'text-slate-400 hover:bg-slate-800/60 hover:text-white px-3'
             }
-            ${isOpen ? 'gap-3' : 'justify-center'}
+            ${isOpen ? (group.active ? 'pl-4 pr-3 gap-3' : 'gap-3') : 'justify-center'}
           `}
         >
-          <span className={`shrink-0 ${group.active ? 'text-accent-500' : 'text-slate-400'}`}>{group.icon}</span>
+          {group.active && (
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-sky-300 shadow-[0_0_8px_rgba(125,211,252,0.8)]" />
+          )}
+          <span className={`shrink-0 ${group.active ? 'text-white' : 'text-slate-400 group-hover:text-white'}`}>{group.icon}</span>
           <AnimatePresence>
             {isOpen && (
               <motion.span
@@ -123,11 +126,11 @@ function MenuItemGroup({ group, isOpen }: { group: MenuGroup, isOpen: boolean })
     <div className="group relative">
       <button
         onClick={() => setExpanded(!expanded)}
-        className={`flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900
+        className={`flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 transition-all duration-200 hover:bg-slate-800/60 hover:text-white
           ${isOpen ? 'gap-3' : 'justify-center'}
         `}
       >
-        <span className="shrink-0 text-slate-400">{group.icon}</span>
+        <span className="shrink-0 text-slate-400 group-hover:text-white">{group.icon}</span>
         
         <AnimatePresence>
           {isOpen && (
@@ -171,17 +174,17 @@ function MenuItemGroup({ group, isOpen }: { group: MenuGroup, isOpen: boolean })
             transition={{ duration: 0.25, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="ml-5 border-l border-slate-200 pl-3 mt-1 space-y-0.5">
+            <div className="ml-5 border-l border-slate-700/50 pl-3 mt-1 space-y-0.5">
               {group.children.map((child) => (
                 <button
                   key={child.label}
                   className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-[13px] font-medium transition-all duration-200 whitespace-nowrap
                     ${child.active
-                      ? 'bg-accent-50 text-accent-600'
-                      : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800'
+                      ? 'text-sky-400 font-semibold'
+                      : 'text-slate-500 hover:bg-slate-800/50 hover:text-slate-200'
                     }`}
                 >
-                  <ChevronRight size={12} className={`shrink-0 ${child.active ? 'text-accent-500' : 'text-slate-400'}`} />
+                  <ChevronRight size={12} className={`shrink-0 ${child.active ? 'text-sky-400' : 'text-slate-600'}`} />
                   {child.label}
                 </button>
               ))}
@@ -197,9 +200,9 @@ export default function Sidebar({ onClose, isOpen }: SidebarProps) {
   return (
     <>
       {/* Header */}
-        <div className={`flex items-center ${isOpen ? 'justify-between' : 'justify-center'} border-b border-slate-200/60 px-5 py-5 h-16`}>
+        <div className={`flex items-center ${isOpen ? 'justify-between' : 'justify-center'} border-b border-slate-800/80 px-5 py-5 h-16`}>
           <div className="flex items-center gap-2.5 shrink-0">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg gradient-accent shadow-lg shrink-0">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-tr from-sky-400 to-blue-600 shadow-[0_0_15px_rgba(56,189,248,0.5)] shrink-0">
               <Boxes size={18} className="text-white" />
             </div>
             <AnimatePresence>
@@ -211,8 +214,8 @@ export default function Sidebar({ onClose, isOpen }: SidebarProps) {
                   transition={{ duration: 0.15 }}
                   className="whitespace-nowrap"
                 >
-                  <h1 className="text-[15px] font-bold text-slate-900 tracking-tight">Ultraship</h1>
-                  <p className="text-[10px] font-medium text-slate-500 uppercase tracking-widest">TMS Platform</p>
+                  <h1 className="text-[15px] font-bold text-white tracking-tight">Ultraship</h1>
+                  <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">TMS Platform</p>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -220,7 +223,7 @@ export default function Sidebar({ onClose, isOpen }: SidebarProps) {
           {isOpen && (
             <button
               onClick={onClose}
-              className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-900 lg:hidden shrink-0"
+              className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-slate-800 hover:text-white lg:hidden shrink-0"
             >
               <X size={18} />
             </button>
@@ -235,7 +238,7 @@ export default function Sidebar({ onClose, isOpen }: SidebarProps) {
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-slate-200/60 p-4 overflow-hidden">
+        <div className="border-t border-slate-800/80 p-4 overflow-hidden">
           <AnimatePresence>
             {isOpen ? (
               <motion.div
@@ -243,10 +246,10 @@ export default function Sidebar({ onClose, isOpen }: SidebarProps) {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
                 transition={{ duration: 0.15 }}
-                className="rounded-lg bg-slate-50 p-3 border border-slate-200/60 shadow-sm whitespace-nowrap"
+                className="rounded-lg bg-slate-800/50 p-3 border border-slate-700/50 shadow-sm whitespace-nowrap"
               >
-                <p className="text-xs font-semibold text-slate-800">Pro Plan Active</p>
-                <p className="mt-0.5 text-[11px] text-slate-500">Unlimited shipments</p>
+                <p className="text-xs font-semibold text-white">Pro Plan Active</p>
+                <p className="mt-0.5 text-[11px] text-slate-400">Unlimited shipments</p>
               </motion.div>
             ) : (
               <motion.div
@@ -255,8 +258,8 @@ export default function Sidebar({ onClose, isOpen }: SidebarProps) {
                 exit={{ opacity: 0 }}
                 className="flex justify-center"
               >
-                <div className="h-8 w-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 group relative cursor-pointer">
-                  <span className="text-[10px] font-bold text-slate-600">PRO</span>
+                <div className="h-8 w-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 group relative cursor-pointer">
+                  <span className="text-[10px] font-bold text-slate-300">PRO</span>
                   <div className="absolute left-14 top-1/2 -translate-y-1/2 ml-2 bg-slate-900 text-white text-xs font-semibold py-1.5 px-2.5 rounded shadow-xl whitespace-nowrap pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity z-[100]">
                     Pro Plan Active
                   </div>

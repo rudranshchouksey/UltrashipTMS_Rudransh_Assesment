@@ -63,32 +63,28 @@ export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, 
       {/* Summary Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
         <StatCard 
-          label="Total" 
+          title="Total Loads Booked" 
           value={shipments.length.toString()} 
-          icon={<Package size={16} />}
-          trendText="Across all facilities"
-          trendIndicatorClass="bg-slate-300"
+          badgeText="100% Volume"
+          badgeClass="bg-slate-50 text-slate-600 border border-slate-200"
         />
         <StatCard 
-          label="Pending" 
+          title="Loads Pending" 
           value={shipments.filter((s: Shipment) => s.status === 'PENDING').length.toString()} 
-          icon={<Clock size={16} />}
-          trendText="Needs assignment"
-          trendIndicatorClass="bg-amber-400"
+          badgeText="Needs attention"
+          badgeClass="bg-amber-50 text-amber-700 border border-amber-200/60"
         />
         <StatCard 
-          label="In Transit" 
+          title="Loads In Transit" 
           value={shipments.filter((s: Shipment) => s.status === 'IN_TRANSIT').length.toString()} 
-          icon={<Truck size={16} />}
-          trendText="Currently moving"
-          trendIndicatorClass="bg-indigo-500"
+          badgeText="On schedule"
+          badgeClass="bg-blue-50 text-blue-700 border border-blue-200/60"
         />
         <StatCard 
-          label="Delivered" 
+          title="Loads Delivered" 
           value={shipments.filter((s: Shipment) => s.status === 'DELIVERED').length.toString()} 
-          icon={<CheckCircle2 size={16} />}
-          trendText="Successfully completed"
-          trendIndicatorClass="bg-emerald-500"
+          badgeText="98% Success"
+          badgeClass="bg-emerald-50 text-emerald-700 border border-emerald-200/60"
         />
       </div>
 
@@ -128,31 +124,29 @@ export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, 
 }
 
 function StatCard({ 
-  label, 
+  title, 
   value, 
-  icon, 
-  trendText, 
-  trendIndicatorClass 
+  badgeText, 
+  badgeClass 
 }: { 
-  label: string; 
+  title: string; 
   value: string; 
-  icon: React.ReactNode; 
-  trendText?: string; 
-  trendIndicatorClass?: string 
+  badgeText?: string; 
+  badgeClass?: string 
 }) {
   return (
-    <div className="flex flex-col rounded-xl bg-white px-5 py-4 border border-slate-200/70 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
-      <div className="flex items-center gap-2 mb-2">
-        <div className="text-slate-400">{icon}</div>
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">{label}</p>
-      </div>
-      <p className="text-3xl font-bold text-slate-900 tracking-tight">{value}</p>
-      {trendText && (
-        <div className="mt-3 flex items-center gap-1.5">
-          <span className={`h-1.5 w-1.5 rounded-full ${trendIndicatorClass}`} />
-          <span className="text-[11px] font-medium text-slate-500">{trendText}</span>
+    <div className="flex flex-col justify-end rounded-xl bg-white p-5 border border-slate-200/60 shadow-[0_4px_12px_rgba(0,0,0,0.03)] relative h-full min-h-[120px]">
+      {badgeText && (
+        <div className="absolute top-4 right-4">
+          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${badgeClass}`}>
+            <span className="text-[14px] leading-none mb-0.5">•</span> {badgeText}
+          </span>
         </div>
       )}
+      <div>
+        <p className="text-3xl font-bold text-slate-900 tracking-tight">{value}</p>
+        <p className="text-xs font-semibold text-slate-500 mt-1">{title}</p>
+      </div>
     </div>
   );
 }
