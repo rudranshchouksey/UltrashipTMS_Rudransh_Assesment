@@ -87,11 +87,11 @@ function MenuItemGroup({ group }: { group: MenuGroup }) {
       <button
         className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200
           ${group.active
-            ? 'bg-accent-400/10 text-accent-500'
-            : 'text-surface-800 hover:bg-surface-200 hover:text-white'
+            ? 'bg-accent-50 text-accent-600'
+            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
           }`}
       >
-        <span className="text-surface-600">{group.icon}</span>
+        <span className={group.active ? 'text-accent-500' : 'text-slate-400'}>{group.icon}</span>
         {group.label}
       </button>
     );
@@ -101,14 +101,14 @@ function MenuItemGroup({ group }: { group: MenuGroup }) {
     <div>
       <button
         onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-surface-800 transition-all duration-200 hover:bg-surface-200 hover:text-white"
+        className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900"
       >
-        <span className="text-surface-600">{group.icon}</span>
+        <span className="text-slate-400">{group.icon}</span>
         <span className="flex-1 text-left">{group.label}</span>
         <motion.span
           animate={{ rotate: expanded ? 0 : -90 }}
           transition={{ duration: 0.2 }}
-          className="text-surface-600"
+          className="text-slate-400"
         >
           <ChevronDown size={14} />
         </motion.span>
@@ -123,17 +123,17 @@ function MenuItemGroup({ group }: { group: MenuGroup }) {
             transition={{ duration: 0.25, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="ml-5 border-l border-surface-300 pl-3 mt-1 space-y-0.5">
+            <div className="ml-5 border-l border-slate-200 pl-3 mt-1 space-y-0.5">
               {group.children.map((child) => (
                 <button
                   key={child.label}
                   className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-[13px] font-medium transition-all duration-200
                     ${child.active
-                      ? 'bg-accent-400/10 text-accent-500'
-                      : 'text-surface-700 hover:bg-surface-200 hover:text-surface-900'
+                      ? 'bg-accent-50 text-accent-600'
+                      : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800'
                     }`}
                 >
-                  <ChevronRight size={12} className={child.active ? 'text-accent-400' : 'text-surface-500'} />
+                  <ChevronRight size={12} className={child.active ? 'text-accent-500' : 'text-slate-400'} />
                   {child.label}
                 </button>
               ))}
@@ -168,22 +168,22 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         variants={sidebarVariants}
         initial="closed"
         animate={isOpen ? 'open' : 'closed'}
-        className="fixed left-0 top-0 z-50 flex h-full w-72 flex-col glass-strong lg:relative lg:z-auto lg:translate-x-0"
+        className="fixed left-0 top-0 z-50 flex h-full w-72 flex-col bg-white border-r border-slate-200/80 lg:relative lg:z-auto lg:translate-x-0"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-surface-300/50 px-5 py-5">
+        <div className="flex items-center justify-between border-b border-slate-200/80 px-5 py-5">
           <div className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg gradient-accent shadow-lg">
               <Boxes size={18} className="text-white" />
             </div>
             <div>
-              <h1 className="text-[15px] font-bold text-white tracking-tight">Ultraship</h1>
-              <p className="text-[10px] font-medium text-surface-600 uppercase tracking-widest">TMS Platform</p>
+              <h1 className="text-[15px] font-bold text-slate-900 tracking-tight">Ultraship</h1>
+              <p className="text-[10px] font-medium text-slate-500 uppercase tracking-widest">TMS Platform</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-surface-600 transition-colors hover:bg-surface-200 hover:text-white lg:hidden"
+            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-900 lg:hidden"
           >
             <X size={18} />
           </button>
@@ -197,10 +197,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-surface-300/50 px-5 py-4">
-          <div className="rounded-lg bg-gradient-to-r from-accent-400/10 to-purple-500/10 p-3 border border-accent-400/10">
-            <p className="text-xs font-semibold text-accent-500">Pro Plan Active</p>
-            <p className="mt-0.5 text-[11px] text-surface-600">Unlimited shipments</p>
+        <div className="border-t border-slate-200/80 px-5 py-4">
+          <div className="rounded-lg bg-slate-50 p-3 border border-slate-200/60 shadow-sm">
+            <p className="text-xs font-semibold text-slate-800">Pro Plan Active</p>
+            <p className="mt-0.5 text-[11px] text-slate-500">Unlimited shipments</p>
           </div>
         </div>
       </motion.aside>

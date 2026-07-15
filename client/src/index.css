@@ -2,16 +2,16 @@
 
 /* ─── Custom Design Tokens ─── */
 @theme {
-  --color-surface-50: #0a0e17;
-  --color-surface-100: #0f1525;
-  --color-surface-200: #151d33;
-  --color-surface-300: #1c2640;
-  --color-surface-400: #263052;
-  --color-surface-500: #334166;
-  --color-surface-600: #4a5578;
-  --color-surface-700: #6b7394;
-  --color-surface-800: #9ca3b8;
-  --color-surface-900: #cdd1dc;
+  --color-surface-50: #f8fafc;
+  --color-surface-100: #f1f5f9;
+  --color-surface-200: #e2e8f0;
+  --color-surface-300: #cbd5e1;
+  --color-surface-400: #94a3b8;
+  --color-surface-500: #64748b;
+  --color-surface-600: #475569;
+  --color-surface-700: #334155;
+  --color-surface-800: #1e293b;
+  --color-surface-900: #0f172a;
 
   --color-accent-400: #6366f1;
   --color-accent-500: #818cf8;
@@ -58,17 +58,19 @@
 /* ─── Utilities ─── */
 @layer utilities {
   .glass {
-    background: rgba(15, 21, 37, 0.7);
+    background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(99, 102, 241, 0.08);
+    border: 1px solid var(--color-surface-200);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   }
 
   .glass-strong {
-    background: rgba(15, 21, 37, 0.85);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(99, 102, 241, 0.12);
+    border: 1px solid var(--color-surface-200);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
   }
 
   .gradient-accent {
