@@ -14,12 +14,13 @@ interface ShipmentsPageProps {
   userRole: UserRole;
   searchQuery: string;
   onClearFilters: () => void;
+  onEditShipment: (shipment: Shipment) => void;
 }
 
 import EmptyState from '../components/EmptyState';
 import QuickActionsToolbar from '../components/QuickActionsToolbar';
 
-export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, userRole, searchQuery, onClearFilters }: ShipmentsPageProps) {
+export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, userRole, searchQuery, onClearFilters, onEditShipment }: ShipmentsPageProps) {
   const [selectedShipment, setSelectedShipment] = useState<Shipment | null>(null);
 
   const { data } = useQuery<any>(GET_SHIPMENTS, {
@@ -101,6 +102,7 @@ export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, 
             key="grid"
             shipments={shipments}
             onSelectShipment={handleSelectShipment}
+            onEditShipment={onEditShipment}
           />
         ) : (
           <TileGrid
@@ -108,6 +110,7 @@ export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, 
             shipments={shipments}
             userRole={userRole}
             onSelectShipment={handleSelectShipment}
+            onEditShipment={onEditShipment}
           />
         )}
       </AnimatePresence>

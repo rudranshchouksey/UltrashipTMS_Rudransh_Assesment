@@ -16,6 +16,7 @@ interface ShipmentTileCardProps {
   shipment: Shipment;
   userRole: UserRole;
   onSelect: (shipment: Shipment) => void;
+  onEdit: () => void;
 }
 
 /* ─── Helpers ─── */
@@ -69,6 +70,7 @@ function MenuItem({ icon, label, danger, onClick }: MenuItemProps) {
 interface ContextMenuProps {
   userRole: UserRole;
   onClose: () => void;
+  onEdit: () => void;
 }
 
 const menuVariants = {
@@ -77,7 +79,7 @@ const menuVariants = {
   exit: { opacity: 0, scale: 0.92, y: -4, transition: { duration: 0.1 } },
 };
 
-function ContextMenu({ userRole, onClose }: ContextMenuProps) {
+function ContextMenu({ userRole, onClose, onEdit }: ContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -109,7 +111,7 @@ function ContextMenu({ userRole, onClose }: ContextMenuProps) {
       <MenuItem
         icon={<Pencil size={13} />}
         label="Edit"
-        onClick={() => { onClose(); }}
+        onClick={() => { onClose(); onEdit(); }}
       />
       <MenuItem
         icon={<Flag size={13} />}
@@ -141,7 +143,7 @@ const cardVariants = {
 
 /* ─── ShipmentTileCard ─── */
 
-export default function ShipmentTileCard({ shipment, userRole, onSelect }: ShipmentTileCardProps) {
+export default function ShipmentTileCard({ shipment, userRole, onSelect, onEdit }: ShipmentTileCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const route = getRouteProgress(shipment.status);
 
@@ -189,6 +191,7 @@ export default function ShipmentTileCard({ shipment, userRole, onSelect }: Shipm
               <ContextMenu
                 userRole={userRole}
                 onClose={() => setMenuOpen(false)}
+                onEdit={onEdit}
               />
             )}
           </AnimatePresence>

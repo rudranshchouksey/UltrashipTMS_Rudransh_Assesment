@@ -12,6 +12,7 @@ interface DashboardLayoutProps {
   onRoleToggle: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  onOpenNew: () => void;
 }
 
 const springTransition = { type: 'spring', stiffness: 300, damping: 30 };
@@ -24,6 +25,7 @@ export default function DashboardLayout({
   onRoleToggle,
   searchQuery,
   onSearchChange,
+  onOpenNew,
 }: DashboardLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
@@ -75,6 +77,7 @@ export default function DashboardLayout({
           onRoleToggle={onRoleToggle}
           searchQuery={searchQuery}
           onSearchChange={onSearchChange}
+          onOpenNew={onOpenNew}
         />
         <div className="flex-1 overflow-y-auto">
           {children}

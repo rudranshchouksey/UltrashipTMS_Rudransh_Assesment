@@ -20,6 +20,7 @@ interface TopNavProps {
   onRoleToggle: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  onOpenNew: () => void;
 }
 
 export default function TopNav({
@@ -31,6 +32,7 @@ export default function TopNav({
   onRoleToggle,
   searchQuery,
   onSearchChange,
+  onOpenNew,
 }: TopNavProps) {
   return (
     <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/60 shadow-sm">
@@ -80,10 +82,22 @@ export default function TopNav({
         </div>
 
         {/* Quick Actions */}
-        <button className="hidden md:flex items-center gap-2 rounded-xl gradient-accent px-4 py-2.5 text-xs font-semibold text-white shadow-lg shadow-accent-400/20 transition-all duration-200 hover:shadow-accent-400/40 hover:scale-[1.02] active:scale-[0.98]">
-          <Plus size={14} />
-          New Shipment
-        </button>
+        {userRole === 'ADMIN' ? (
+          <button 
+            onClick={onOpenNew}
+            className="hidden md:flex items-center gap-2 rounded-xl gradient-accent px-4 py-2.5 text-xs font-semibold text-white shadow-lg shadow-accent-400/20 transition-all duration-200 hover:shadow-accent-400/40 hover:scale-[1.02] active:scale-[0.98]">
+            <Plus size={14} />
+            New Shipment
+          </button>
+        ) : (
+          <button 
+            disabled
+            title="Admins only"
+            className="hidden md:flex items-center gap-2 rounded-xl bg-slate-300 px-4 py-2.5 text-xs font-semibold text-slate-500 cursor-not-allowed">
+            <Plus size={14} />
+            New Shipment
+          </button>
+        )}
 
         {/* Notifications */}
         <button className="relative rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900">

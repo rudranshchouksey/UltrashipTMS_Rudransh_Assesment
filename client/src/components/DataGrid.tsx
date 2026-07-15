@@ -1,11 +1,12 @@
 import { motion } from 'framer-motion';
-import { MoreHorizontal, MapPin, ExternalLink, Copy } from 'lucide-react';
+import { MoreHorizontal, MapPin, ExternalLink, Copy, Pencil } from 'lucide-react';
 import type { Shipment } from '../types';
 import StatusBadge from './StatusBadge';
 
 interface DataGridProps {
   shipments: Shipment[];
   onSelectShipment: (shipment: Shipment) => void;
+  onEditShipment: (shipment: Shipment) => void;
 }
 
 const columns = [
@@ -33,7 +34,7 @@ function truncateId(id: string): string {
   return id.split('-')[0].toUpperCase();
 }
 
-export default function DataGrid({ shipments, onSelectShipment }: DataGridProps) {
+export default function DataGrid({ shipments, onSelectShipment, onEditShipment }: DataGridProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
@@ -143,8 +144,11 @@ export default function DataGrid({ shipments, onSelectShipment }: DataGridProps)
 
                 {/* Actions */}
                 <td className="px-6 py-4 text-right">
-                  <button className="rounded-lg p-1.5 text-slate-400 opacity-0 group-hover:opacity-100 transition-all hover:bg-slate-100 hover:text-slate-900">
-                    <MoreHorizontal size={16} />
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onEditShipment(shipment); }}
+                    title="Edit Shipment"
+                    className="rounded-lg p-1.5 text-slate-400 opacity-0 group-hover:opacity-100 transition-all hover:bg-slate-100 hover:text-slate-900">
+                    <Pencil size={15} />
                   </button>
                 </td>
               </motion.tr>

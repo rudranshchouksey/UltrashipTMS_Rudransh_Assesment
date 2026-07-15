@@ -6,6 +6,7 @@ interface TileGridProps {
   shipments: Shipment[];
   userRole: UserRole;
   onSelectShipment: (shipment: Shipment) => void;
+  onEditShipment: (shipment: Shipment) => void;
 }
 
 const containerVariants = {
@@ -21,7 +22,7 @@ const containerVariants = {
   exit: { opacity: 0, y: -6, transition: { duration: 0.2 } },
 };
 
-export default function TileGrid({ shipments, userRole, onSelectShipment }: TileGridProps) {
+export default function TileGrid({ shipments, userRole, onSelectShipment, onEditShipment }: TileGridProps) {
   return (
     <motion.div
       variants={containerVariants}
@@ -36,6 +37,7 @@ export default function TileGrid({ shipments, userRole, onSelectShipment }: Tile
           shipment={shipment}
           userRole={userRole}
           onSelect={onSelectShipment}
+          onEdit={() => onEditShipment(shipment)}
         />
       ))}
     </motion.div>
