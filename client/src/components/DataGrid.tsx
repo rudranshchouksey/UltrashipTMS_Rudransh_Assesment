@@ -36,10 +36,10 @@ function truncateId(id: string): string {
 export default function DataGrid({ shipments, onSelectShipment }: DataGridProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -12 }}
-      transition={{ duration: 0.3, ease: 'easeOut' }}
+      exit={{ opacity: 0, y: -6 }}
+      transition={{ duration: 0.2 }}
       className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden"
     >
       <div className="overflow-x-auto">
@@ -63,9 +63,9 @@ export default function DataGrid({ shipments, onSelectShipment }: DataGridProps)
             {shipments.map((shipment, index) => (
               <motion.tr
                 key={shipment.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: index * 0.015, duration: 0.25 }}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.03, duration: 0.2 }}
                 onClick={() => onSelectShipment(shipment)}
                 className="group cursor-pointer transition-colors duration-150 hover:bg-slate-50/50 bg-white"
               >

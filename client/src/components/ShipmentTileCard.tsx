@@ -134,8 +134,8 @@ function ContextMenu({ userRole, onClose }: ContextMenuProps) {
 /* ─── Card Variants ─── */
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.97 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.35, ease: 'easeOut' as const } },
+  hidden: { opacity: 0, y: 10, scale: 0.98 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.2 } },
   exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } },
 };
 
@@ -161,9 +161,10 @@ export default function ShipmentTileCard({ shipment, userRole, onSelect }: Shipm
       variants={cardVariants}
       layout
       onClick={handleCardClick}
+      whileHover={{ scale: 1.01 }}
       className="group relative rounded-2xl bg-white border border-slate-200 cursor-pointer
-        transition-all duration-200 ease-out shadow-sm
-        hover:scale-[1.02] hover:shadow-lg hover:border-slate-300"
+        transition-colors transition-shadow duration-200 ease-out shadow-sm
+        hover:shadow-lg hover:border-slate-300"
     >
       {/* ─── Header ─── */}
       <div className="flex items-center justify-between px-5 pt-5 pb-3">
