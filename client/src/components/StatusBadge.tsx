@@ -8,27 +8,27 @@ interface StatusBadgeProps {
 const statusConfig: Record<ShipmentStatus, { label: string; dotClass: string; bgClass: string; textClass: string }> = {
   [ShipmentStatus.PENDING]: {
     label: 'Pending',
-    dotClass: 'bg-amber-400',
-    bgClass: 'bg-amber-400/10 ring-amber-400/20',
-    textClass: 'text-amber-300',
+    dotClass: 'bg-amber-500',
+    bgClass: 'bg-amber-50 ring-amber-200/60',
+    textClass: 'text-amber-700',
   },
   [ShipmentStatus.IN_TRANSIT]: {
     label: 'In Transit',
-    dotClass: 'bg-blue-400',
-    bgClass: 'bg-blue-400/10 ring-blue-400/20',
-    textClass: 'text-blue-300',
+    dotClass: 'bg-blue-500',
+    bgClass: 'bg-blue-50 ring-blue-200/60',
+    textClass: 'text-blue-700',
   },
   [ShipmentStatus.DELIVERED]: {
     label: 'Delivered',
-    dotClass: 'bg-emerald-400',
-    bgClass: 'bg-emerald-400/10 ring-emerald-400/20',
-    textClass: 'text-emerald-300',
+    dotClass: 'bg-emerald-500',
+    bgClass: 'bg-emerald-50 ring-emerald-200/60',
+    textClass: 'text-emerald-700',
   },
   [ShipmentStatus.EXCEPTION]: {
     label: 'Exception',
-    dotClass: 'bg-red-400',
-    bgClass: 'bg-red-400/10 ring-red-400/20',
-    textClass: 'text-red-300',
+    dotClass: 'bg-rose-500',
+    bgClass: 'bg-rose-50 ring-rose-200/60',
+    textClass: 'text-rose-700',
   },
 };
 

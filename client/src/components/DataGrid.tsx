@@ -40,17 +40,17 @@ export default function DataGrid({ shipments, onSelectShipment }: DataGridProps)
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -12 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
-      className="rounded-2xl glass glow-accent overflow-hidden"
+      className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden"
     >
       <div className="overflow-x-auto">
         <table className="w-full min-w-[1200px]">
           {/* Sticky Header */}
           <thead>
-            <tr className="border-b border-surface-300/50">
+            <tr className="border-b border-slate-200">
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className={`sticky top-0 z-10 bg-surface-100/95 backdrop-blur-md px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-surface-600 ${col.width}`}
+                  className={`sticky top-0 z-10 bg-slate-50 px-4 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 ${col.width}`}
                 >
                   {col.label}
                 </th>
@@ -59,7 +59,7 @@ export default function DataGrid({ shipments, onSelectShipment }: DataGridProps)
           </thead>
 
           {/* Body */}
-          <tbody className="divide-y divide-surface-300/30">
+          <tbody className="divide-y divide-slate-100">
             {shipments.map((shipment, index) => (
               <motion.tr
                 key={shipment.id}
@@ -67,15 +67,15 @@ export default function DataGrid({ shipments, onSelectShipment }: DataGridProps)
                 animate={{ opacity: 1 }}
                 transition={{ delay: index * 0.015, duration: 0.25 }}
                 onClick={() => onSelectShipment(shipment)}
-                className="group cursor-pointer transition-colors duration-150 hover:bg-surface-200/40"
+                className="group cursor-pointer transition-colors duration-150 hover:bg-slate-50/80 bg-white"
               >
                 {/* ID */}
                 <td className="px-4 py-3.5">
                   <div className="flex items-center gap-1.5">
-                    <span className="font-mono text-xs font-semibold text-accent-500">
+                    <span className="font-mono text-xs font-medium text-indigo-600">
                       #{truncateId(shipment.id)}
                     </span>
-                    <button className="opacity-0 group-hover:opacity-100 transition-opacity text-surface-600 hover:text-white">
+                    <button className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-slate-900">
                       <Copy size={11} />
                     </button>
                   </div>
@@ -88,14 +88,14 @@ export default function DataGrid({ shipments, onSelectShipment }: DataGridProps)
 
                 {/* Shipper */}
                 <td className="px-4 py-3.5">
-                  <p className="text-xs font-medium text-surface-900 truncate max-w-[140px]">{shipment.shipper.name}</p>
+                  <p className="text-xs font-medium text-slate-900 truncate max-w-[140px]">{shipment.shipper.name}</p>
                 </td>
 
                 {/* Carrier */}
                 <td className="px-4 py-3.5">
                   <div>
-                    <p className="text-xs font-medium text-surface-900 truncate max-w-[130px]">{shipment.carrier.name}</p>
-                    <p className="text-[10px] text-surface-600 font-mono">{shipment.carrier.scacCode}</p>
+                    <p className="text-xs font-medium text-slate-900 truncate max-w-[130px]">{shipment.carrier.name}</p>
+                    <p className="text-[10px] text-slate-500 font-mono">{shipment.carrier.scacCode}</p>
                   </div>
                 </td>
 
@@ -104,8 +104,8 @@ export default function DataGrid({ shipments, onSelectShipment }: DataGridProps)
                   <div className="flex items-start gap-1.5">
                     <MapPin size={12} className="mt-0.5 text-emerald-400 shrink-0" />
                     <div>
-                      <p className="text-xs font-medium text-surface-900">{shipment.origin.city}, {shipment.origin.state}</p>
-                      <p className="text-[10px] text-surface-600">{shipment.origin.zip}</p>
+                      <p className="text-xs font-medium text-slate-900">{shipment.origin.city}, {shipment.origin.state}</p>
+                      <p className="text-[10px] text-slate-500">{shipment.origin.zip}</p>
                     </div>
                   </div>
                 </td>
@@ -115,27 +115,27 @@ export default function DataGrid({ shipments, onSelectShipment }: DataGridProps)
                   <div className="flex items-start gap-1.5">
                     <MapPin size={12} className="mt-0.5 text-red-400 shrink-0" />
                     <div>
-                      <p className="text-xs font-medium text-surface-900">{shipment.destination.city}, {shipment.destination.state}</p>
-                      <p className="text-[10px] text-surface-600">{shipment.destination.zip}</p>
+                      <p className="text-xs font-medium text-slate-900">{shipment.destination.city}, {shipment.destination.state}</p>
+                      <p className="text-[10px] text-slate-500">{shipment.destination.zip}</p>
                     </div>
                   </div>
                 </td>
 
                 {/* Rate */}
                 <td className="px-4 py-3.5">
-                  <span className="text-xs font-semibold text-white">{formatCurrency(shipment.rates.totalRate)}</span>
+                  <span className="text-xs font-semibold text-slate-900">{formatCurrency(shipment.rates.totalRate)}</span>
                 </td>
 
                 {/* Pickup Date */}
                 <td className="px-4 py-3.5">
-                  <span className="text-xs text-surface-800">{formatDate(shipment.pickupDate)}</span>
+                  <span className="text-xs text-slate-600">{formatDate(shipment.pickupDate)}</span>
                 </td>
 
                 {/* Tracking */}
                 <td className="px-4 py-3.5">
                   <div className="flex items-center gap-1">
-                    <span className="font-mono text-[11px] text-surface-700">{shipment.trackingNumber}</span>
-                    <button className="opacity-0 group-hover:opacity-100 transition-opacity text-surface-600 hover:text-accent-500">
+                    <span className="font-mono text-[11px] text-slate-500">{shipment.trackingNumber}</span>
+                    <button className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-indigo-600">
                       <ExternalLink size={11} />
                     </button>
                   </div>
@@ -143,7 +143,7 @@ export default function DataGrid({ shipments, onSelectShipment }: DataGridProps)
 
                 {/* Actions */}
                 <td className="px-4 py-3.5">
-                  <button className="rounded-lg p-1.5 text-surface-600 opacity-0 group-hover:opacity-100 transition-all hover:bg-surface-200 hover:text-white">
+                  <button className="rounded-lg p-1.5 text-slate-400 opacity-0 group-hover:opacity-100 transition-all hover:bg-slate-100 hover:text-slate-900">
                     <MoreHorizontal size={16} />
                   </button>
                 </td>
@@ -154,9 +154,9 @@ export default function DataGrid({ shipments, onSelectShipment }: DataGridProps)
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between border-t border-surface-300/50 px-4 py-3">
-        <p className="text-xs text-surface-600">
-          Showing <span className="font-semibold text-surface-800">{shipments.length}</span> shipments
+      <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 bg-white">
+        <p className="text-xs text-slate-500">
+          Showing <span className="font-semibold text-slate-700">{shipments.length}</span> shipments
         </p>
         <div className="flex items-center gap-1">
           {[1, 2, 3, '...', 5].map((p, i) => (
@@ -164,8 +164,8 @@ export default function DataGrid({ shipments, onSelectShipment }: DataGridProps)
               key={i}
               className={`h-8 min-w-[32px] rounded-lg px-2.5 text-xs font-medium transition-colors
                 ${p === 1
-                  ? 'bg-accent-400/15 text-accent-500 ring-1 ring-accent-400/20'
-                  : 'text-surface-600 hover:bg-surface-200 hover:text-white'
+                  ? 'bg-indigo-50 text-indigo-600 ring-1 ring-indigo-500/20'
+                  : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
                 }`}
             >
               {p}
