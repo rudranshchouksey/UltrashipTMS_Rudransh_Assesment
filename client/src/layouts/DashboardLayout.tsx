@@ -15,7 +15,7 @@ interface DashboardLayoutProps {
   onOpenNew: () => void;
 }
 
-const springTransition = { type: 'spring', stiffness: 300, damping: 30 };
+const springTransition = { type: 'spring' as const, stiffness: 300, damping: 30 };
 
 export default function DashboardLayout({
   children,

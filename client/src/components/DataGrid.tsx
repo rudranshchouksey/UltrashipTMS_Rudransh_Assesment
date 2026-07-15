@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { MoreHorizontal, MapPin, ExternalLink, Copy, Pencil } from 'lucide-react';
+import { MapPin, ExternalLink, Copy, Pencil } from 'lucide-react';
 import type { Shipment } from '../types';
 import StatusBadge from './StatusBadge';
 

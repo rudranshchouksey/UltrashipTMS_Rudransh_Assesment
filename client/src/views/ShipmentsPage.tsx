@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { Package, Clock, Truck, CheckCircle2 } from 'lucide-react';
+
 import { useQuery } from '@apollo/client/react';
 import { GET_SHIPMENTS } from '../graphql/queries';
 import type { Shipment, ViewMode, UserRole } from '../types';
