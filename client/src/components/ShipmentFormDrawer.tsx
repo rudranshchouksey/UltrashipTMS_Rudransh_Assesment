@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Save, Lock } from 'lucide-react';
+import { X, Save, Lock, Loader2, Check } from 'lucide-react';
+import { useMutation } from '@apollo/client';
+import { CREATE_SHIPMENT_MUTATION, UPDATE_SHIPMENT_MUTATION } from '../graphql/mutations';
+import { GET_SHIPMENTS } from '../graphql/queries';
 
 export type UserRole = 'ADMIN' | 'EMPLOYEE';
 export type FormMode = 'create' | 'edit';
@@ -34,9 +37,9 @@ interface ShipmentFormDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   mode: FormMode;
-  initialData?: Partial<ShipmentFormData>;
+  initialData?: Partial<ShipmentFormData> & { id?: string };
   userRole: UserRole;
-  onSubmit: (data: ShipmentFormData) => void;
+  onSuccess?: () => void;
 }
 
 const defaultFormData: ShipmentFormData = {
@@ -57,9 +60,52 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
   mode,
   initialData,
   userRole,
-  onSubmit,
+  onSuccess,
 }) => {
   const [formData, setFormData] = useState<ShipmentFormData>(defaultFormData);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const [createShipment, { loading: creating }] = useMutation(CREATE_SHIPMENT_MUTATION, {
+    update(cache, { data: { createShipment } }) {
+      try {
+        const data: any = cache.readQuery({ query: GET_SHIPMENTS });
+        if (data && data.shipments) {
+          cache.writeQuery({
+            query: GET_SHIPMENTS,
+            data: {
+              shipments: {
+                ...data.shipments,
+                edges: [
+                  { __typename: 'ShipmentEdge', cursor: btoa(createShipment.id), node: createShipment },
+                  ...data.shipments.edges,
+                ],
+                totalCount: data.shipments.totalCount + 1,
+              },
+            },
+          });
+        }
+      } catch (e) {
+        // GET_SHIPMENTS might not be in cache yet if they navigated directly here
+        console.error('Error updating cache:', e);
+      }
+    },
+    onCompleted: () => handleSuccess(),
+  });
+
+  const [updateShipment, { loading: updating }] = useMutation(UPDATE_SHIPMENT_MUTATION, {
+    onCompleted: () => handleSuccess(),
+  });
+
+  const isSubmitting = creating || updating;
+
+  const handleSuccess = () => {
+    setIsSuccess(true);
+    setTimeout(() => {
+      setIsSuccess(false);
+      onClose();
+      if (onSuccess) onSuccess();
+    }, 800);
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -95,9 +141,74 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    if (isSubmitting) return;
+
+    if (mode === 'create') {
+      await createShipment({
+        variables: {
+          input: {
+            shipperName: formData.shipperName,
+            carrierName: formData.carrierName,
+            trackingNumber: formData.trackingNumber,
+            status: formData.status,
+            origin: formData.origin,
+            destination: formData.destination,
+            rates: {
+              baseRate: formData.rates.baseRate,
+              fuelSurcharge: formData.rates.fuelSurcharge,
+            },
+            pickupDate: formData.pickupDate,
+            deliveryDate: formData.deliveryDate,
+          }
+        }
+      });
+    } else if (mode === 'edit' && initialData?.id) {
+      // Build optimistic response
+      const optimisticResponse = {
+        updateShipment: {
+          __typename: 'Shipment',
+          id: initialData.id,
+          status: formData.status,
+          trackingNumber: formData.trackingNumber,
+          rates: {
+            __typename: 'Rates',
+            baseRate: formData.rates.baseRate,
+            fuelSurcharge: formData.rates.fuelSurcharge,
+            totalRate: formData.rates.baseRate + formData.rates.fuelSurcharge,
+          },
+          pickupDate: formData.pickupDate,
+          deliveryDate: formData.deliveryDate,
+          updatedAt: new Date().toISOString(),
+          origin: { __typename: 'Address', ...formData.origin },
+          destination: { __typename: 'Address', ...formData.destination },
+          shipper: { __typename: 'Shipper', id: 'temp-shipper', name: formData.shipperName },
+          carrier: { __typename: 'Carrier', id: 'temp-carrier', name: formData.carrierName },
+        }
+      };
+
+      await updateShipment({
+        variables: {
+          input: {
+            id: initialData.id,
+            shipperName: formData.shipperName,
+            carrierName: formData.carrierName,
+            trackingNumber: formData.trackingNumber,
+            status: formData.status,
+            origin: formData.origin,
+            destination: formData.destination,
+            rates: {
+              baseRate: formData.rates.baseRate,
+              fuelSurcharge: formData.rates.fuelSurcharge,
+            },
+            pickupDate: formData.pickupDate,
+            deliveryDate: formData.deliveryDate,
+          }
+        },
+        optimisticResponse
+      });
+    }
   };
 
   const inputClass = `w-full bg-white border border-slate-200/80 rounded-lg px-3 py-2 text-sm text-slate-700 outline-none transition-all duration-200 
@@ -270,10 +381,19 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
               <button
                 type="submit"
                 form="shipment-form"
-                className="px-5 py-2 flex items-center gap-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors focus:ring-4 focus:ring-blue-500/20"
+                disabled={isSubmitting || isSuccess}
+                className="px-5 py-2 flex items-center gap-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors focus:ring-4 focus:ring-blue-500/20 disabled:bg-blue-400 disabled:cursor-not-allowed w-40 justify-center"
               >
-                <Save className="w-4 h-4" />
-                {mode === 'create' ? 'Create Shipment' : 'Save Changes'}
+                {isSubmitting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : isSuccess ? (
+                  <Check className="w-4 h-4 text-white" />
+                ) : (
+                  <>
+                    <Save className="w-4 h-4" />
+                    {mode === 'create' ? 'Create Shipment' : 'Save Changes'}
+                  </>
+                )}
               </button>
             </div>
           </motion.div>
