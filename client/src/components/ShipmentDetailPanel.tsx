@@ -74,31 +74,31 @@ function TimelineStep({ icon, label, sublabel, detail, color, lineColor, active,
       {/* Icon + Line Column */}
       <div className="flex flex-col items-center">
         <div
-          className={`flex h-10 w-10 items-center justify-center rounded-full ring-2 ring-inset transition-all
+          className={`flex h-10 w-10 items-center justify-center rounded-full ring-1 ring-inset transition-all
             ${completed
-              ? `bg-${color}-400/15 ring-${color}-400/30 text-${color}-400`
+              ? `bg-${color}-50 ring-${color}-200 text-${color}-600`
               : active
-                ? `bg-${color}-400/15 ring-${color}-400/30 text-${color}-400 animate-pulse-dot`
-                : 'bg-surface-300/20 ring-surface-400/20 text-surface-600'
+                ? `bg-${color}-50 ring-${color}-200 text-${color}-600 animate-pulse-dot`
+                : 'bg-slate-50 ring-slate-200 text-slate-400'
             }`}
         >
           {icon}
         </div>
         {!isLast && (
-          <div className={`w-px flex-1 min-h-[32px] mt-1 ${lineColor || 'bg-surface-300/30'}`} />
+          <div className={`w-px flex-1 min-h-[32px] mt-1 ${lineColor || 'bg-slate-200'}`} />
         )}
       </div>
 
       {/* Content */}
       <div className="pb-6 pt-1.5 flex-1">
-        <p className={`text-sm font-semibold ${completed || active ? 'text-white' : 'text-surface-600'}`}>
+        <p className={`text-sm font-semibold ${completed || active ? 'text-slate-900' : 'text-slate-500'}`}>
           {label}
         </p>
         {sublabel && (
-          <p className="text-xs text-surface-700 mt-0.5">{sublabel}</p>
+          <p className="text-xs text-slate-600 mt-0.5">{sublabel}</p>
         )}
         {detail && (
-          <p className="text-[11px] text-surface-600 mt-1">{detail}</p>
+          <p className="text-[11px] text-slate-500 mt-1">{detail}</p>
         )}
       </div>
     </div>
@@ -109,11 +109,11 @@ function TimelineStep({ icon, label, sublabel, detail, color, lineColor, active,
 
 function InfoChip({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="flex items-start gap-3 rounded-xl bg-surface-200/30 px-4 py-3 ring-1 ring-surface-300/20">
-      <div className="mt-0.5 text-surface-600">{icon}</div>
+    <div className="flex items-start gap-3 rounded-xl bg-white px-4 py-3 ring-1 ring-slate-200 shadow-sm">
+      <div className="mt-0.5 text-slate-400">{icon}</div>
       <div className="min-w-0 flex-1">
-        <p className="text-[10px] uppercase tracking-wider text-surface-600 mb-0.5">{label}</p>
-        <p className="text-xs font-medium text-surface-900 break-all">{value}</p>
+        <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-0.5">{label}</p>
+        <p className="text-xs font-medium text-slate-900 break-all">{value}</p>
       </div>
     </div>
   );
@@ -124,9 +124,9 @@ function InfoChip({ icon, label, value }: { icon: React.ReactNode; label: string
 function SectionHeader({ title, icon }: { title: string; icon: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2.5 mb-5">
-      <div className="text-accent-500">{icon}</div>
-      <h3 className="text-sm font-bold text-white uppercase tracking-wider">{title}</h3>
-      <div className="flex-1 h-px bg-gradient-to-r from-surface-300/40 to-transparent" />
+      <div className="text-indigo-500">{icon}</div>
+      <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">{title}</h3>
+      <div className="flex-1 h-px bg-slate-200" />
     </div>
   );
 }
@@ -140,17 +140,15 @@ const backdropVariants: Variants = {
 };
 
 const panelVariants: Variants = {
-  hidden: { opacity: 0, y: 60, scale: 0.97 },
+  hidden: { opacity: 0, x: '100%' },
   visible: {
     opacity: 1,
-    y: 0,
-    scale: 1,
+    x: 0,
     transition: { type: 'spring', stiffness: 300, damping: 30, mass: 0.8 },
   },
   exit: {
     opacity: 0,
-    y: 40,
-    scale: 0.97,
+    x: '100%',
     transition: { duration: 0.2, ease: 'easeIn' },
   },
 };
@@ -213,7 +211,7 @@ export default function ShipmentDetailPanel({ shipment, userRole, onClose }: Shi
         animate="visible"
         exit="exit"
         onClick={onClose}
-        className="fixed inset-0 z-50 glass-overlay"
+        className="fixed inset-0 z-50 backdrop-blur-sm bg-slate-900/10"
       />
 
       {/* Panel */}
@@ -222,17 +220,15 @@ export default function ShipmentDetailPanel({ shipment, userRole, onClose }: Shi
         initial="hidden"
         animate="visible"
         exit="exit"
-        className="fixed inset-4 sm:inset-6 lg:inset-x-auto lg:inset-y-6 lg:left-1/2 lg:-translate-x-1/2 lg:w-full lg:max-w-3xl z-50
-          rounded-3xl glass-strong overflow-hidden flex flex-col
-          shadow-2xl shadow-black/50 ring-1 ring-accent-400/10"
+        className="fixed inset-y-0 right-0 w-full max-w-xl z-50 bg-slate-50 border-l border-slate-200 overflow-hidden flex flex-col shadow-2xl"
       >
         {/* ─── Header ─── */}
-        <div className="shrink-0 border-b border-surface-300/30 px-6 py-5 sm:px-8">
+        <div className="shrink-0 border-b border-slate-200 bg-white px-6 py-5 sm:px-8">
           <div className="flex items-center justify-between">
             <button
               onClick={onClose}
-              className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-surface-700
-                transition-all duration-200 hover:bg-surface-200/50 hover:text-white group"
+              className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-slate-600
+                transition-all duration-200 hover:bg-slate-100 hover:text-slate-900 group"
             >
               <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-0.5" />
               Back to List
@@ -243,7 +239,7 @@ export default function ShipmentDetailPanel({ shipment, userRole, onClose }: Shi
                 <button
                   onClick={handleUpdateStatus}
                   disabled={updating || shipment.status === 'DELIVERED'}
-                  className="flex items-center gap-2 rounded-xl bg-accent-500/10 px-3 py-2 text-xs font-semibold text-accent-400 ring-1 ring-accent-500/20 transition-all hover:bg-accent-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 rounded-xl bg-indigo-50 px-3 py-2 text-xs font-semibold text-indigo-600 ring-1 ring-indigo-500/20 transition-all hover:bg-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {updating ? 'Updating...' : 'Update Status'}
                 </button>
@@ -253,16 +249,16 @@ export default function ShipmentDetailPanel({ shipment, userRole, onClose }: Shi
 
           <div className="mt-4">
             <div className="flex items-baseline gap-3 flex-wrap">
-              <h2 className="text-xl sm:text-2xl font-bold gradient-text">
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
                 #{shipment.id.split('-')[0].toUpperCase()}
               </h2>
-              <span className="text-xs font-mono text-surface-600 bg-surface-200/40 px-2 py-0.5 rounded-md">
+              <span className="text-xs font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
                 {shipment.trackingNumber}
               </span>
             </div>
-            <p className="mt-1 text-sm text-surface-700">
+            <p className="mt-1 text-sm text-slate-600">
               {shipment.carrier.name}
-              <span className="text-surface-600 ml-1.5 font-mono text-xs">({shipment.carrier.scacCode})</span>
+              <span className="text-slate-500 ml-1.5 font-mono text-xs">({shipment.carrier.scacCode})</span>
             </p>
           </div>
         </div>
@@ -278,15 +274,15 @@ export default function ShipmentDetailPanel({ shipment, userRole, onClose }: Shi
           <motion.section variants={fadeUp}>
             <SectionHeader title="Route Information" icon={<MapPin size={16} />} />
 
-            <div className="ml-1">
+            <div className="ml-1 bg-white p-6 rounded-2xl ring-1 ring-slate-200 shadow-sm">
               {/* Origin */}
               <TimelineStep
                 icon={<Package size={18} />}
                 label={`${shipment.origin.city}, ${shipment.origin.state}`}
                 sublabel={shipment.origin.address}
                 detail={`ZIP: ${shipment.origin.zip} · Pickup: ${formatDate(shipment.pickupDate)}`}
-                color="emerald"
-                lineColor={statusIndex >= 1 ? 'bg-gradient-to-b from-emerald-400/50 to-blue-400/50' : 'bg-surface-300/30'}
+                color="indigo"
+                lineColor={statusIndex >= 1 ? 'bg-indigo-200' : 'bg-slate-200'}
                 completed={statusIndex >= 0}
               />
 
@@ -296,8 +292,8 @@ export default function ShipmentDetailPanel({ shipment, userRole, onClose }: Shi
                 label={isException ? 'Exception Reported' : 'In Transit'}
                 sublabel={isException ? 'Shipment has encountered an issue' : 'Shipment is on the way'}
                 detail={`Est. Delivery: ${formatDate(shipment.deliveryDate)}`}
-                color={isException ? 'red' : 'blue'}
-                lineColor={statusIndex >= 2 ? 'bg-gradient-to-b from-blue-400/50 to-emerald-400/50' : 'bg-surface-300/30'}
+                color={isException ? 'rose' : 'indigo'}
+                lineColor={statusIndex >= 2 ? 'bg-indigo-200' : 'bg-slate-200'}
                 active={statusIndex === 1}
                 completed={statusIndex >= 2}
               />
@@ -308,7 +304,7 @@ export default function ShipmentDetailPanel({ shipment, userRole, onClose }: Shi
                 label={`${shipment.destination.city}, ${shipment.destination.state}`}
                 sublabel={shipment.destination.address}
                 detail={`ZIP: ${shipment.destination.zip}`}
-                color="emerald"
+                color="indigo"
                 completed={statusIndex >= 2}
                 isLast
               />
@@ -319,38 +315,34 @@ export default function ShipmentDetailPanel({ shipment, userRole, onClose }: Shi
           <motion.section variants={fadeUp}>
             <SectionHeader title="Financial Breakdown" icon={<Receipt size={16} />} />
 
-            <div className="rounded-2xl bg-surface-200/20 ring-1 ring-surface-300/20 overflow-hidden">
+            <dl className="rounded-2xl bg-white ring-1 ring-slate-200 overflow-hidden shadow-sm">
               {/* Base Rate */}
-              <div className="flex items-center justify-between px-5 py-3.5">
-                <div className="flex items-center gap-2.5">
-                  <DollarSign size={14} className="text-surface-600" />
-                  <span className="text-xs font-medium text-surface-800">Base Rate</span>
-                </div>
-                <span className="text-sm font-semibold text-surface-900">{formatCurrency(shipment.rates.baseRate)}</span>
+              <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100">
+                <dt className="flex items-center gap-2.5 text-xs font-medium text-slate-500">
+                  <DollarSign size={14} className="text-slate-400" />
+                  Base Rate
+                </dt>
+                <dd className="text-sm font-semibold text-slate-900">{formatCurrency(shipment.rates.baseRate)}</dd>
               </div>
-
-              <div className="mx-5 h-px bg-surface-300/20" />
 
               {/* Fuel Surcharge */}
-              <div className="flex items-center justify-between px-5 py-3.5">
-                <div className="flex items-center gap-2.5">
-                  <Fuel size={14} className="text-surface-600" />
-                  <span className="text-xs font-medium text-surface-800">Fuel Surcharge</span>
-                </div>
-                <span className="text-sm font-semibold text-surface-900">{formatCurrency(shipment.rates.fuelSurcharge)}</span>
+              <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100">
+                <dt className="flex items-center gap-2.5 text-xs font-medium text-slate-500">
+                  <Fuel size={14} className="text-slate-400" />
+                  Fuel Surcharge
+                </dt>
+                <dd className="text-sm font-semibold text-slate-900">{formatCurrency(shipment.rates.fuelSurcharge)}</dd>
               </div>
-
-              <div className="mx-5 h-px bg-surface-300/20" />
 
               {/* Total */}
-              <div className="flex items-center justify-between px-5 py-4 bg-accent-400/5">
-                <div className="flex items-center gap-2.5">
-                  <Receipt size={14} className="text-accent-500" />
-                  <span className="text-xs font-bold text-white">Total Rate</span>
-                </div>
-                <span className="text-lg font-bold gradient-text">{formatCurrency(shipment.rates.totalRate)}</span>
+              <div className="flex items-center justify-between px-5 py-4 bg-slate-50">
+                <dt className="flex items-center gap-2.5 text-xs font-bold text-slate-700">
+                  <Receipt size={14} className="text-indigo-600" />
+                  Total Rate
+                </dt>
+                <dd className="text-lg font-bold text-indigo-600">{formatCurrency(shipment.rates.totalRate)}</dd>
               </div>
-            </div>
+            </dl>
           </motion.section>
 
           {/* ─── Metadata ─── */}
