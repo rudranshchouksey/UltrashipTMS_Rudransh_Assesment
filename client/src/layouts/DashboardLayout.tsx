@@ -50,13 +50,13 @@ export default function DashboardLayout({
       <motion.aside
         initial={false}
         animate={{ 
-          width: isSidebarOpen ? 288 : 0,
+          width: isSidebarOpen ? 288 : 64,
         }}
         transition={springTransition}
-        className="flex-shrink-0 z-50 h-full bg-white overflow-hidden absolute lg:relative"
+        className="flex-shrink-0 z-50 h-full bg-white absolute lg:relative z-50"
       >
-        <div className="w-[288px] h-full flex flex-col border-r border-slate-200/60">
-          <SidebarContent onClose={closeSidebar} />
+        <div className="w-full h-full flex flex-col border-r border-slate-200/60 overflow-visible">
+          <SidebarContent onClose={closeSidebar} isOpen={isSidebarOpen} />
         </div>
       </motion.aside>
 
@@ -67,6 +67,7 @@ export default function DashboardLayout({
         className="flex flex-1 flex-col overflow-hidden relative min-w-0"
       >
         <TopNav
+          isSidebarOpen={isSidebarOpen}
           onToggleSidebar={toggleSidebar}
           viewMode={viewMode}
           onViewModeChange={onViewModeChange}

@@ -12,6 +12,7 @@ import {
 import type { ViewMode, UserRole } from '../types';
 
 interface TopNavProps {
+  isSidebarOpen: boolean;
   onToggleSidebar: () => void;
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
@@ -22,6 +23,7 @@ interface TopNavProps {
 }
 
 export default function TopNav({
+  isSidebarOpen,
   onToggleSidebar,
   viewMode,
   onViewModeChange,
@@ -31,14 +33,19 @@ export default function TopNav({
   onSearchChange,
 }: TopNavProps) {
   return (
-    <header className="sticky top-0 z-30 bg-white border-b border-slate-200/60">
+    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/60">
       <div className="flex h-16 items-center gap-4 px-4 lg:px-6">
         {/* Hamburger */}
         <button
           onClick={onToggleSidebar}
           className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
         >
-          <Menu size={20} />
+          <motion.div
+            animate={{ rotate: isSidebarOpen ? 0 : 180 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          >
+            <Menu size={20} />
+          </motion.div>
         </button>
 
         {/* Search */}
