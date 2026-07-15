@@ -2,15 +2,14 @@
 # Dependencies
 # ========================
 node_modules/
-jspm_packages/
-bower_components/
 
 # ========================
 # Build & Output
 # ========================
 dist/
-build/
+dist-ssr/
 *.tsbuildinfo
+*.local
 
 # ========================
 # Environment Variables
@@ -31,19 +30,9 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # ========================
-# Runtime Data
-# ========================
-pids/
-*.pid
-*.seed
-*.pid.lock
-
-# ========================
 # Testing & Coverage
 # ========================
 coverage/
-*.lcov
-.nyc_output/
 
 # ========================
 # IDE & Editor
@@ -63,12 +52,3 @@ coverage/
 # ========================
 .DS_Store
 Thumbs.db
-Desktop.ini
-
-# ========================
-# Misc Caches
-# ========================
-.cache/
-.eslintcache
-.npm/
-*.tgz
