@@ -1,14 +1,27 @@
+import { useState, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import type { Shipment, ViewMode } from '../types';
+import type { Shipment, ViewMode, UserRole } from '../types';
 import DataGrid from '../components/DataGrid';
 import TileGrid from '../components/TileGrid';
+import ShipmentDetailPanel from '../components/ShipmentDetailPanel';
 
 interface ShipmentsPageProps {
   shipments: Shipment[];
   viewMode: ViewMode;
+  userRole: UserRole;
 }
 
-export default function ShipmentsPage({ shipments, viewMode }: ShipmentsPageProps) {
+export default function ShipmentsPage({ shipments, viewMode, userRole }: ShipmentsPageProps) {
+  const [selectedShipment, setSelectedShipment] = useState<Shipment | null>(null);
+
+  const handleSelectShipment = useCallback((shipment: Shipment) => {
+    setSelectedShipment(shipment);
+  }, []);
+
+  const handleCloseDetail = useCallback(() => {
+    setSelectedShipment(null);
+  }, []);
+
   return (
     <div className="p-4 lg:p-6">
       {/* Page Header */}
@@ -30,9 +43,29 @@ export default function ShipmentsPage({ shipments, viewMode }: ShipmentsPageProp
       {/* View Content */}
       <AnimatePresence mode="wait">
         {viewMode === 'grid' ? (
-          <DataGrid key="grid" shipments={shipments} />
+          <DataGrid
+            key="grid"
+            shipments={shipments}
+            onSelectShipment={handleSelectShipment}
+          />
         ) : (
-          <TileGrid key="tile" shipments={shipments} />
+          <TileGrid
+            key="tile"
+            shipments={shipments}
+            userRole={userRole}
+            onSelectShipment={handleSelectShipment}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Detail Panel Overlay */}
+      <AnimatePresence>
+        {selectedShipment && (
+          <ShipmentDetailPanel
+            key={selectedShipment.id}
+            shipment={selectedShipment}
+            onClose={handleCloseDetail}
+          />
         )}
       </AnimatePresence>
     </div>

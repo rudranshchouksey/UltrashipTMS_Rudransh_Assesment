@@ -34,7 +34,7 @@ function App() {
 
         {/* Content */}
         <main className="flex-1 overflow-y-auto">
-          <ShipmentsPage shipments={mockShipments} viewMode={viewMode} />
+          <ShipmentsPage shipments={mockShipments} viewMode={viewMode} userRole={userRole} />
         </main>
       </div>
     </div>

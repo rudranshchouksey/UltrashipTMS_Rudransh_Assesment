@@ -5,6 +5,7 @@ import StatusBadge from './StatusBadge';
 
 interface DataGridProps {
   shipments: Shipment[];
+  onSelectShipment: (shipment: Shipment) => void;
 }
 
 const columns = [
@@ -32,7 +33,7 @@ function truncateId(id: string): string {
   return id.split('-')[0].toUpperCase();
 }
 
-export default function DataGrid({ shipments }: DataGridProps) {
+export default function DataGrid({ shipments, onSelectShipment }: DataGridProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -65,7 +66,8 @@ export default function DataGrid({ shipments }: DataGridProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: index * 0.015, duration: 0.25 }}
-                className="group transition-colors duration-150 hover:bg-surface-200/40"
+                onClick={() => onSelectShipment(shipment)}
+                className="group cursor-pointer transition-colors duration-150 hover:bg-surface-200/40"
               >
                 {/* ID */}
                 <td className="px-4 py-3.5">
