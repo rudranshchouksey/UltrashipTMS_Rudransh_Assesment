@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 
 interface SidebarProps {
-  isOpen: boolean;
   onClose: () => void;
 }
 
@@ -145,32 +144,10 @@ function MenuItemGroup({ group }: { group: MenuGroup }) {
   );
 }
 
-export default function Sidebar({ isOpen, onClose }: SidebarProps) {
+export default function Sidebar({ onClose }: SidebarProps) {
   return (
     <>
-      {/* Overlay */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            variants={overlayVariants}
-            initial="closed"
-            animate="open"
-            exit="closed"
-            transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
-            onClick={onClose}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Sidebar */}
-      <motion.aside
-        variants={sidebarVariants}
-        initial="closed"
-        animate={isOpen ? 'open' : 'closed'}
-        className="fixed left-0 top-0 z-50 flex h-full w-72 flex-col bg-white border-r border-slate-200/60 lg:relative lg:z-auto lg:translate-x-0"
-      >
-        {/* Header */}
+      {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200/60 px-5 py-5">
           <div className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg gradient-accent shadow-lg">
@@ -203,7 +180,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             <p className="mt-0.5 text-[11px] text-slate-500">Unlimited shipments</p>
           </div>
         </div>
-      </motion.aside>
     </>
   );
 }
