@@ -32,12 +32,20 @@ export const CREATE_SHIPMENT_MUTATION = gql`
         city
         state
         zip
+        geo {
+          latitude
+          longitude
+        }
       }
       destination {
         address
         city
         state
         zip
+        geo {
+          latitude
+          longitude
+        }
       }
     }
   }
@@ -56,26 +64,39 @@ export const UPDATE_SHIPMENT_MUTATION = gql`
       }
       pickupDate
       deliveryDate
+      createdAt
       updatedAt
       shipper {
         id
         name
+        contactEmail
+        phone
       }
       carrier {
         id
         name
+        scacCode
+        contactEmail
       }
       origin {
         address
         city
         state
         zip
+        geo {
+          latitude
+          longitude
+        }
       }
       destination {
         address
         city
         state
         zip
+        geo {
+          latitude
+          longitude
+        }
       }
     }
   }
