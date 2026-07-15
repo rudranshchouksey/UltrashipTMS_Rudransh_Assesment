@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
+import { useQuery } from '@apollo/client/react';
+import { GET_SHIPMENTS } from '../graphql/queries';
 import type { Shipment, ViewMode, UserRole } from '../types';
 import DataGrid from '../components/DataGrid';
 import TileGrid from '../components/TileGrid';
@@ -11,8 +13,16 @@ interface ShipmentsPageProps {
   userRole: UserRole;
 }
 
-export default function ShipmentsPage({ shipments, viewMode, userRole }: ShipmentsPageProps) {
+export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, userRole }: ShipmentsPageProps) {
   const [selectedShipment, setSelectedShipment] = useState<Shipment | null>(null);
+
+  const { data, loading, error } = useQuery(GET_SHIPMENTS, {
+    variables: { first: 50 },
+    fetchPolicy: 'cache-and-network'
+  });
+
+  // Extract from GraphQL response, fallback to mock data if not available
+  const shipments = data?.shipments?.edges?.map((e: any) => e.node) || fallbackShipments;
 
   const handleSelectShipment = useCallback((shipment: Shipment) => {
     setSelectedShipment(shipment);
@@ -64,6 +74,7 @@ export default function ShipmentsPage({ shipments, viewMode, userRole }: Shipmen
           <ShipmentDetailPanel
             key={selectedShipment.id}
             shipment={selectedShipment}
+            userRole={userRole}
             onClose={handleCloseDetail}
           />
         )}

@@ -8,12 +8,18 @@ import type { ViewMode, UserRole } from './types';
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [userRole, setUserRole] = useState<UserRole>('ADMIN');
+  const [userRole, setUserRole] = useState<UserRole>(() => {
+    return (localStorage.getItem('userRole') as UserRole) || 'ADMIN';
+  });
 
   const toggleSidebar = useCallback(() => setSidebarOpen((prev) => !prev), []);
   const closeSidebar = useCallback(() => setSidebarOpen(false), []);
   const toggleRole = useCallback(
-    () => setUserRole((prev) => (prev === 'ADMIN' ? 'EMPLOYEE' : 'ADMIN')),
+    () => setUserRole((prev) => {
+      const nextRole = prev === 'ADMIN' ? 'EMPLOYEE' : 'ADMIN';
+      localStorage.setItem('userRole', nextRole);
+      return nextRole;
+    }),
     []
   );
 

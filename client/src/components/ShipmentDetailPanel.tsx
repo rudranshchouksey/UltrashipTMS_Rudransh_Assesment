@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { motion, type Variants } from 'framer-motion';
+import { useMutation } from '@apollo/client';
+import { UPDATE_SHIPMENT_STATUS } from '../graphql/mutations';
 import {
   ArrowLeft,
   MapPin,
@@ -18,11 +20,12 @@ import {
   Hash,
   CalendarDays,
 } from 'lucide-react';
-import type { Shipment } from '../types';
+import type { Shipment, UserRole } from '../types';
 import StatusBadge from './StatusBadge';
 
 interface ShipmentDetailPanelProps {
   shipment: Shipment;
+  userRole: UserRole;
   onClose: () => void;
 }
 
@@ -163,7 +166,9 @@ const fadeUp: Variants = {
 
 /* ─── Main Component ─── */
 
-export default function ShipmentDetailPanel({ shipment, onClose }: ShipmentDetailPanelProps) {
+export default function ShipmentDetailPanel({ shipment, userRole, onClose }: ShipmentDetailPanelProps) {
+  const [updateStatus, { loading: updating }] = useMutation(UPDATE_SHIPMENT_STATUS);
+
   // Close on Escape
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -178,6 +183,18 @@ export default function ShipmentDetailPanel({ shipment, onClose }: ShipmentDetai
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
   }, []);
+
+  const handleUpdateStatus = async () => {
+    const nextStatus = shipment.status === 'PENDING' ? 'IN_TRANSIT' : 'DELIVERED';
+    try {
+      await updateStatus({
+        variables: { id: shipment.id, input: { status: nextStatus } },
+        refetchQueries: ['GetShipments']
+      });
+    } catch (e) {
+      console.error('Failed to update status', e);
+    }
+  };
 
   const statusIndex =
     shipment.status === 'PENDING' ? 0
@@ -220,7 +237,18 @@ export default function ShipmentDetailPanel({ shipment, onClose }: ShipmentDetai
               <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-0.5" />
               Back to List
             </button>
-            <StatusBadge status={shipment.status} />
+            <div className="flex items-center gap-3">
+              <StatusBadge status={shipment.status} />
+              {userRole === 'ADMIN' && (
+                <button
+                  onClick={handleUpdateStatus}
+                  disabled={updating || shipment.status === 'DELIVERED'}
+                  className="flex items-center gap-2 rounded-xl bg-accent-500/10 px-3 py-2 text-xs font-semibold text-accent-400 ring-1 ring-accent-500/20 transition-all hover:bg-accent-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {updating ? 'Updating...' : 'Update Status'}
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="mt-4">
