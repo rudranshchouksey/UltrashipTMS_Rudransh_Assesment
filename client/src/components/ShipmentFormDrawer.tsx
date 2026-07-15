@@ -66,8 +66,41 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
   const [isSuccess, setIsSuccess] = useState(false);
 
   const [createShipment, { loading: creating }] = useMutation<{ createShipment: any }>(CREATE_SHIPMENT_MUTATION, {
-    refetchQueries: ['GetShipments'],
-    awaitRefetchQueries: true,
+    update(cache, { data }) {
+      if (!data?.createShipment) return;
+      const newShipment = data.createShipment;
+
+      try {
+        // 1. Read the current shipments list from the Apollo Cache
+        const cachedData: any = cache.readQuery({ query: GET_SHIPMENTS });
+        
+        // Handle edge-cases safely: Only update if the query exists in cache
+        if (cachedData && cachedData.shipments) {
+          
+          // 2. Merge the newly created shipment with the existing cached array
+          const newEdge = { 
+            __typename: 'ShipmentEdge', 
+            cursor: btoa(newShipment.id), 
+            node: newShipment 
+          };
+
+          // 3. Write the merged array back to the cache
+          cache.writeQuery({
+            query: GET_SHIPMENTS,
+            data: {
+              shipments: {
+                ...cachedData.shipments,
+                edges: [newEdge, ...cachedData.shipments.edges], // Prepend to top
+                totalCount: cachedData.shipments.totalCount + 1,
+              },
+            },
+          });
+        }
+      } catch (e) {
+        // Handle edge-case: If readQuery throws, the user hasn't visited the list yet
+        console.warn('GET_SHIPMENTS query not found in cache. Skipping manual cache update.');
+      }
+    },
     onCompleted: () => handleSuccess(),
   });
 
