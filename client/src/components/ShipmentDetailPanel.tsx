@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import {
   ArrowLeft,
   MapPin,
@@ -130,13 +130,13 @@ function SectionHeader({ title, icon }: { title: string; icon: React.ReactNode }
 
 /* ─── Animation Variants ─── */
 
-const backdropVariants = {
+const backdropVariants: Variants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { duration: 0.3 } },
   exit: { opacity: 0, transition: { duration: 0.25, delay: 0.1 } },
 };
 
-const panelVariants = {
+const panelVariants: Variants = {
   hidden: { opacity: 0, y: 60, scale: 0.97 },
   visible: {
     opacity: 1,
@@ -152,11 +152,11 @@ const panelVariants = {
   },
 };
 
-const staggerChildren = {
+const staggerChildren: Variants = {
   visible: { transition: { staggerChildren: 0.06, delayChildren: 0.15 } },
 };
 
-const fadeUp = {
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } },
 };
