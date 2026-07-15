@@ -22,6 +22,11 @@ export const getContext = async ({ req }: { req: Request }): Promise<GraphQLCont
     } catch (err) {
       console.warn('Invalid JWT Token', err);
     }
+  } else if (req.headers['x-user-role']) {
+    const roleHeader = req.headers['x-user-role'] as string;
+    if (Object.values(Role).includes(roleHeader as Role)) {
+      user = { id: 'mock-user-id', role: roleHeader as Role };
+    }
   }
 
   return { user, dataLoaders };

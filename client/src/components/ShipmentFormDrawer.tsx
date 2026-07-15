@@ -66,31 +66,8 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
   const [isSuccess, setIsSuccess] = useState(false);
 
   const [createShipment, { loading: creating }] = useMutation<{ createShipment: any }>(CREATE_SHIPMENT_MUTATION, {
-    update(cache, { data }) {
-      if (!data?.createShipment) return;
-      const { createShipment } = data;
-      try {
-        const cachedData: any = cache.readQuery({ query: GET_SHIPMENTS });
-        if (cachedData && cachedData.shipments) {
-          cache.writeQuery({
-            query: GET_SHIPMENTS,
-            data: {
-              shipments: {
-                ...cachedData.shipments,
-                edges: [
-                  { __typename: 'ShipmentEdge', cursor: btoa(createShipment.id), node: createShipment },
-                  ...cachedData.shipments.edges,
-                ],
-                totalCount: cachedData.shipments.totalCount + 1,
-              },
-            },
-          });
-        }
-      } catch (e) {
-        // GET_SHIPMENTS might not be in cache yet if they navigated directly here
-        console.error('Error updating cache:', e);
-      }
-    },
+    refetchQueries: ['GetShipments'],
+    awaitRefetchQueries: true,
     onCompleted: () => handleSuccess(),
   });
 
@@ -115,6 +92,8 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
         setFormData({
           ...defaultFormData,
           ...initialData,
+          pickupDate: initialData.pickupDate ? initialData.pickupDate.substring(0, 16) : '',
+          deliveryDate: initialData.deliveryDate ? initialData.deliveryDate.substring(0, 16) : '',
           origin: { ...defaultFormData.origin, ...initialData.origin },
           destination: { ...defaultFormData.destination, ...initialData.destination },
           rates: { ...defaultFormData.rates, ...initialData.rates },
@@ -155,8 +134,18 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
             carrierName: formData.carrierName,
             trackingNumber: formData.trackingNumber,
             status: formData.status,
-            origin: formData.origin,
-            destination: formData.destination,
+            origin: {
+              address: formData.origin.address,
+              city: formData.origin.city,
+              state: formData.origin.state,
+              zip: formData.origin.zip,
+            },
+            destination: {
+              address: formData.destination.address,
+              city: formData.destination.city,
+              state: formData.destination.state,
+              zip: formData.destination.zip,
+            },
             rates: {
               baseRate: formData.rates.baseRate,
               fuelSurcharge: formData.rates.fuelSurcharge,
@@ -198,8 +187,18 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
             carrierName: formData.carrierName,
             trackingNumber: formData.trackingNumber,
             status: formData.status,
-            origin: formData.origin,
-            destination: formData.destination,
+            origin: {
+              address: formData.origin.address,
+              city: formData.origin.city,
+              state: formData.origin.state,
+              zip: formData.origin.zip,
+            },
+            destination: {
+              address: formData.destination.address,
+              city: formData.destination.city,
+              state: formData.destination.state,
+              zip: formData.destination.zip,
+            },
             rates: {
               baseRate: formData.rates.baseRate,
               fuelSurcharge: formData.rates.fuelSurcharge,
