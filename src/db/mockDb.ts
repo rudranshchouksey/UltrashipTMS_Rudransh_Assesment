@@ -56,3 +56,104 @@ export const shipments: Shipment[] = Array.from({ length: 50 }).map(() => {
     updatedAt: new Date().toISOString(),
   };
 });
+
+export const createShipmentRecord = (input: any): Shipment => {
+  let shipper = shippers.find(s => s.name.toLowerCase() === input.shipperName.toLowerCase());
+  if (!shipper) {
+    shipper = {
+      id: faker.string.uuid(),
+      name: input.shipperName,
+      contactEmail: faker.internet.email(),
+      phone: faker.phone.number(),
+    };
+    shippers.push(shipper);
+  }
+
+  let carrier = carriers.find(c => c.name.toLowerCase() === input.carrierName.toLowerCase());
+  if (!carrier) {
+    carrier = {
+      id: faker.string.uuid(),
+      name: input.carrierName,
+      scacCode: faker.string.alpha(4).toUpperCase(),
+      contactEmail: faker.internet.email(),
+    };
+    carriers.push(carrier);
+  }
+
+  const newShipment: Shipment = {
+    id: '#' + faker.string.hexadecimal({ length: 8, prefix: '' }).toUpperCase(),
+    shipperId: shipper.id,
+    carrierId: carrier.id,
+    origin: input.origin,
+    destination: input.destination,
+    status: input.status,
+    trackingNumber: input.trackingNumber,
+    rates: {
+      baseRate: input.rates.baseRate,
+      fuelSurcharge: input.rates.fuelSurcharge,
+      totalRate: input.rates.baseRate + input.rates.fuelSurcharge,
+    },
+    pickupDate: input.pickupDate,
+    deliveryDate: input.deliveryDate,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  shipments.push(newShipment);
+  return newShipment;
+};
+
+export const updateShipmentRecord = (id: string, input: any): Shipment => {
+  const index = shipments.findIndex(s => s.id === id);
+  if (index === -1) {
+    throw new Error(`Shipment ${id} not found`);
+  }
+
+  const shipment = shipments[index];
+
+  if (input.shipperName) {
+    let shipper = shippers.find(s => s.name.toLowerCase() === input.shipperName.toLowerCase());
+    if (!shipper) {
+      shipper = {
+        id: faker.string.uuid(),
+        name: input.shipperName,
+        contactEmail: faker.internet.email(),
+        phone: faker.phone.number(),
+      };
+      shippers.push(shipper);
+    }
+    shipment.shipperId = shipper.id;
+  }
+
+  if (input.carrierName) {
+    let carrier = carriers.find(c => c.name.toLowerCase() === input.carrierName.toLowerCase());
+    if (!carrier) {
+      carrier = {
+        id: faker.string.uuid(),
+        name: input.carrierName,
+        scacCode: faker.string.alpha(4).toUpperCase(),
+        contactEmail: faker.internet.email(),
+      };
+      carriers.push(carrier);
+    }
+    shipment.carrierId = carrier.id;
+  }
+
+  if (input.origin) shipment.origin = { ...shipment.origin, ...input.origin };
+  if (input.destination) shipment.destination = { ...shipment.destination, ...input.destination };
+  if (input.status) shipment.status = input.status;
+  if (input.trackingNumber) shipment.trackingNumber = input.trackingNumber;
+  if (input.pickupDate) shipment.pickupDate = input.pickupDate;
+  if (input.deliveryDate) shipment.deliveryDate = input.deliveryDate;
+  
+  if (input.rates) {
+    shipment.rates = {
+      baseRate: input.rates.baseRate ?? shipment.rates.baseRate,
+      fuelSurcharge: input.rates.fuelSurcharge ?? shipment.rates.fuelSurcharge,
+      totalRate: (input.rates.baseRate ?? shipment.rates.baseRate) + (input.rates.fuelSurcharge ?? shipment.rates.fuelSurcharge),
+    };
+  }
+
+  shipment.updatedAt = new Date().toISOString();
+  return shipment;
+};

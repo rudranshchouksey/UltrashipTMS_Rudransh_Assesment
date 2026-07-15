@@ -128,24 +128,24 @@ export const typeDefs = `#graphql
   input RatesInput {
     baseRate: Float!
     fuelSurcharge: Float!
-    totalRate: Float!
   }
 
   input AddShipmentInput {
-    shipperId: ID!
-    carrierId: ID!
+    shipperName: String!
+    carrierName: String!
     origin: AddressInput!
     destination: AddressInput!
     status: ShipmentStatus = PENDING
-    trackingNumber: String
+    trackingNumber: String!
     rates: RatesInput!
     pickupDate: String!
-    deliveryDate: String
+    deliveryDate: String!
   }
 
   input UpdateShipmentInput {
-    shipperId: ID
-    carrierId: ID
+    id: ID!
+    shipperName: String
+    carrierName: String
     origin: AddressInput
     destination: AddressInput
     status: ShipmentStatus
@@ -156,8 +156,8 @@ export const typeDefs = `#graphql
   }
 
   type Mutation {
-    addShipment(input: AddShipmentInput!): Shipment!
-    updateShipment(id: ID!, input: UpdateShipmentInput!): Shipment!
+    createShipment(input: AddShipmentInput!): Shipment!
+    updateShipment(input: UpdateShipmentInput!): Shipment!
     deleteShipment(id: ID!): Boolean!
   }
 `;
