@@ -51,7 +51,7 @@ export const shipments: Shipment[] = Array.from({ length: 50 }).map(() => {
       totalRate: baseRate + fuelSurcharge,
     },
     pickupDate: faker.date.recent({ days: 10 }).toISOString(),
-    deliveryDate: faker.date.future({ years: 0.1 }).toISOString(),
+    deliveryDate: faker.date.soon({ days: 5 }).toISOString(),
     createdAt: faker.date.past({ years: 1 }).toISOString(),
     updatedAt: new Date().toISOString(),
   };

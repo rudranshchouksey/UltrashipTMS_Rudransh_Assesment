@@ -16,7 +16,7 @@ interface ShipmentsPageProps {
 export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, userRole }: ShipmentsPageProps) {
   const [selectedShipment, setSelectedShipment] = useState<Shipment | null>(null);
 
-  const { data, loading, error } = useQuery(GET_SHIPMENTS, {
+  const { data } = useQuery<any>(GET_SHIPMENTS, {
     variables: { first: 50 },
     fetchPolicy: 'cache-and-network'
   });
