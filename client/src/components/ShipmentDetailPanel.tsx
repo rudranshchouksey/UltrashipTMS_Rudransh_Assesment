@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { motion, type Variants } from 'framer-motion';
 import { useMutation } from '@apollo/client/react';
-import { UPDATE_SHIPMENT_STATUS } from '../graphql/mutations';
+import { UPDATE_SHIPMENT_MUTATION } from '../graphql/mutations';
 import {
   ArrowLeft,
   MapPin,
@@ -165,7 +165,7 @@ const fadeUp: Variants = {
 /* ─── Main Component ─── */
 
 export default function ShipmentDetailPanel({ shipment, userRole, onClose }: ShipmentDetailPanelProps) {
-  const [updateStatus, { loading: updating }] = useMutation(UPDATE_SHIPMENT_STATUS);
+  const [updateStatus, { loading: updating }] = useMutation(UPDATE_SHIPMENT_MUTATION);
 
   // Close on Escape
   useEffect(() => {
