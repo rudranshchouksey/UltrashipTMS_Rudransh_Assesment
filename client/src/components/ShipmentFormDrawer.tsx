@@ -65,21 +65,23 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
   const [formData, setFormData] = useState<ShipmentFormData>(defaultFormData);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const [createShipment, { loading: creating }] = useMutation(CREATE_SHIPMENT_MUTATION, {
-    update(cache, { data: { createShipment } }) {
+  const [createShipment, { loading: creating }] = useMutation<{ createShipment: any }>(CREATE_SHIPMENT_MUTATION, {
+    update(cache, { data }) {
+      if (!data?.createShipment) return;
+      const { createShipment } = data;
       try {
-        const data: any = cache.readQuery({ query: GET_SHIPMENTS });
-        if (data && data.shipments) {
+        const cachedData: any = cache.readQuery({ query: GET_SHIPMENTS });
+        if (cachedData && cachedData.shipments) {
           cache.writeQuery({
             query: GET_SHIPMENTS,
             data: {
               shipments: {
-                ...data.shipments,
+                ...cachedData.shipments,
                 edges: [
                   { __typename: 'ShipmentEdge', cursor: btoa(createShipment.id), node: createShipment },
-                  ...data.shipments.edges,
+                  ...cachedData.shipments.edges,
                 ],
-                totalCount: data.shipments.totalCount + 1,
+                totalCount: cachedData.shipments.totalCount + 1,
               },
             },
           });
