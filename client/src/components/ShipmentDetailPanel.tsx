@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { motion, type Variants } from 'framer-motion';
-import { useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
 import { UPDATE_SHIPMENT_STATUS } from '../graphql/mutations';
 import {
   ArrowLeft,
