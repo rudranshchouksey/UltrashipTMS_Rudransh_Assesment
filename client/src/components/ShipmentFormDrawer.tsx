@@ -4,7 +4,7 @@ import { X, Save, Lock, Loader2, Check, RefreshCw, ChevronDown } from 'lucide-re
 import { gql } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
 import { CREATE_SHIPMENT_MUTATION, UPDATE_SHIPMENT_MUTATION } from '../graphql/mutations';
-import { GET_SHIPMENTS } from '../graphql/queries';
+
 
 export type UserRole = 'ADMIN' | 'EMPLOYEE';
 
