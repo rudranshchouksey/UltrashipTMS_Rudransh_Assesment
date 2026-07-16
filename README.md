@@ -1,99 +1,90 @@
-# Ultraship TMS (Transportation Management System)
+# Ultraship TMS
 
-Welcome to the Ultraship TMS project. This application provides a modern, scalable platform for managing logistics and supply chain operations, featuring a robust Node.js/GraphQL backend and a performant React frontend with Role-Based Access Control (RBAC).
+> A high-density, performance-optimized, premium Light Theme B2B Transportation Management System (TMS) designed for operational excellence.
 
-## Architecture & Performance Features
+## 🌟 Project Concept
 
-This project was built with scale, performance, and maintainability in mind:
+Ultraship TMS is built to handle complex logistics workflows with a premium, Stripe-like aesthetic. Designed specifically for high data density, it provides logistics coordinators and administrators with lightning-fast, reactive interfaces to manage shipments, track statuses, and orchestrate supply chain operations without visual clutter.
 
-- **GraphQL API (Apollo Server):** Provides a strongly-typed, flexible API layer that prevents over-fetching and under-fetching of data. The frontend requests exactly what it needs to render.
-- **Dataloader Pattern:** Integrated on the backend to solve the N+1 query problem, ensuring that relationships (like fetching a Shipper or Carrier for a list of 50 shipments) are batched and cached within a single request.
-- **Cursor-Based Pagination:** The `shipments` query supports Relay-style cursor pagination (`first`, `after`). This guarantees consistent list performance at scale, avoiding the pitfalls of offset-based pagination on large datasets.
-- **Database Indexing Strategy:**
-  - Compound indexes on `(status, pickupDate)` and `(carrierId, status)` to rapidly serve common dashboard filters.
-  - Unique indexes on `trackingNumber` to ensure data integrity.
-- **Glassmorphism UI:** Built with Tailwind CSS and Framer Motion for a fluid, premium aesthetic.
+## 🏗️ Tech Stack Blueprint
 
-## Quickstart
+The application follows a strictly decoupled architecture, separating the client-side presentation layer from the scalable backend services.
 
-### Prerequisites
-- Node.js (v18+)
-- npm or yarn
+### Frontend UI (Client)
+- **Framework**: React 18 & Vite (Lightning-fast HMR and optimized builds)
+- **Styling**: Tailwind CSS (Utility-first, strict design token adherence)
+- **Animations**: Framer Motion (Hardware-accelerated micro-interactions and layout transitions)
+- **State Management**: Apollo Client (GraphQL caching and local state mutations)
+- **Deployment**: Vercel (Edge network distribution)
 
-### Running the Backend
+### Backend API (Server)
+- **Runtime**: Node.js (V8 Engine performance)
+- **API Paradigm**: GraphQL (Strict typing and declarative data fetching)
+- **Architecture**: Serverless Functions / Decoupled Micro-services
+- **Database Mitigation**: DataLoaders (Resolving N+1 querying inefficiencies)
+- **Deployment**: Vercel Serverless
 
-1. Navigate to the root directory:
-   ```bash
-   cd "Ultraship TMS"
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the development server (runs on `http://localhost:4000/graphql`):
-   ```bash
-   npm run dev
-   ```
+## 🚀 Quickstart Guide
 
-### Running the Frontend
+Follow these steps to get the project running locally.
 
-1. Navigate to the client directory:
-   ```bash
-   cd "Ultraship TMS/client"
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the Vite development server:
-   ```bash
-   npm run dev
-   ```
-4. Open the displayed local URL in your browser.
+### 1. Clone the Repository
+```bash
+git clone https://github.com/your-username/ultraship-tms.git
+cd ultraship-tms
+```
 
-## Testing RBAC (Admin vs. Employee)
+### 2. Install Dependencies
+Make sure you have Node.js 18+ installed.
+```bash
+# Install frontend dependencies
+cd frontend && npm install
 
-We've implemented a robust Role-Based Access Control (RBAC) system. The frontend uses Apollo Client to attach a custom `x-user-role` header to every GraphQL request, which the backend context parses to enforce field and mutation-level authorization.
+# Install backend dependencies
+cd ../backend && npm install
+```
 
-**How to Test:**
-1. Open the app in your browser.
-2. In the top navigation bar, locate the **Role Toggle Button** (labeled either `ADMIN` or `EMPLOYEE`).
-3. Click the button to instantly switch your active role.
-4. **Observe the UI changes:**
-   - As an `ADMIN`, click on a shipment card. In the detailed panel, you will see an **"Update Status"** button. You will also see a **"Delete"** option when clicking the context menu (three dots) on a shipment card.
-   - Switch to `EMPLOYEE` and repeat the process. Notice that administrative actions (Update Status, Delete) are dynamically hidden, preventing unauthorized actions at the UI level (and secured at the API level).
+### 3. Environment Variables
+Create `.env.local` files in both frontend and backend directories using the provided templates.
 
----
+**Frontend (`frontend/.env.local`):**
+```env
+VITE_GRAPHQL_API_URL=http://localhost:4000/graphql
+VITE_ENV=development
+```
 
-## Deployment Guide
+**Backend (`backend/.env`):**
+```env
+PORT=4000
+DATABASE_URL=postgresql://user:password@localhost:5432/ultrashiptms
+JWT_SECRET=your_super_secret_key
+```
 
-Deploying this stack is designed to be frictionless. We recommend **Railway/Render** for the Node.js Backend and **Vercel/Netlify** for the React Frontend.
+### 4. Run the Development Servers
+```bash
+# In the backend directory
+npm run dev
 
-### 1. Backend Deployment (Render / Railway)
+# In the frontend directory
+npm run dev
+```
 
-1. **Create a New Web Service:** Connect your GitHub repository to Render or Railway.
-2. **Configuration:**
-   - **Root Directory:** `./` (the root folder).
-   - **Build Command:** `npm install && npm run build`
-   - **Start Command:** `npm start`
-3. **Environment Variables:**
-   - `PORT`: Usually automatically injected, but set to `4000` if required.
-   - `FRONTEND_URL`: Set this to your deployed Vercel URL (e.g., `https://ultraship-tms.vercel.app`). *This is critical for CORS.*
-   - `DATABASE_URL`: Your production connection string.
-4. **CORS Setup:** The backend `cors` middleware is configured to accept requests from `process.env.FRONTEND_URL`. Ensure this perfectly matches your deployed frontend domain.
+## 👔 Hiring Manager Evaluation Sandbox
 
-### 2. Frontend Deployment (Vercel / Netlify)
+Welcome! To easily evaluate the different permission boundaries within the TMS without needing to seed multiple test accounts, we have implemented a **Demo Role-Switcher Widget**.
 
-1. **Create a New Project:** Connect your GitHub repository to Vercel/Netlify.
-2. **Configuration:**
-   - **Root Directory:** `./client` (Important! Tell the platform the frontend lives in the `client` folder).
-   - **Framework Preset:** Vite
-   - **Build Command:** `npm run build`
-   - **Output Directory:** `dist`
-3. **Environment Variables:**
-   - `VITE_GRAPHQL_URL`: Set this to your deployed backend URL (e.g., `https://ultraship-backend.onrender.com/graphql`).
+### How to use the sandbox:
+1. Look for the floating **Role Switcher** widget in the bottom-right corner of the UI.
+2. Toggle between `ADMIN` and `EMPLOYEE` roles.
+3. Observe the dynamic UI changes:
+   - **`ADMIN` Mode**: Full access to global analytics, user management routing, billing data, and destructive actions (e.g., deleting a shipment record).
+   - **`EMPLOYEE` Mode**: Read-only views for analytics, locked administrative settings, and UI components conditionally rendering to hide sensitive financial metrics. The UI fluidly adapts using Framer Motion layout transitions when permissions shift.
 
-### Zero-Friction Checklist
-- [x] Backend CORS accepts the exact `FRONTEND_URL`.
-- [x] Frontend Apollo Client is pointed at the exact `VITE_GRAPHQL_URL`.
-- [x] Backend `PORT` is bound to the environment-provided port (`process.env.PORT || 4000`).
+> [!NOTE]
+> This role switcher intercepts the GraphQL authorization headers locally, mocking a genuine token re-issuance to simulate real-world RBAC (Role-Based Access Control) behavior.
+
+## 🔗 Live Links
+
+- **Frontend Repository**: [GitHub - Frontend](#)
+- **Backend Repository**: [GitHub - Backend](#)
+- **Live Deployment (Vercel)**: [https://ultraship-tms.vercel.app](#)
