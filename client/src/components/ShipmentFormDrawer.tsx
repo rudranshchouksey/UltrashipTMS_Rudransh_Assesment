@@ -79,7 +79,7 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
     },
   });
 
-  const [updateShipment, { loading: updating }] = useMutation(UPDATE_SHIPMENT_MUTATION, {
+  const [updateShipment, { loading: updating }] = useMutation<{ updateShipment: any }>(UPDATE_SHIPMENT_MUTATION, {
     onCompleted: (data) => {
       const updatedId = data?.updateShipment?.id || selectedShipment?.id || 'UPDATED';
       handleSuccess('edit', updatedId);
