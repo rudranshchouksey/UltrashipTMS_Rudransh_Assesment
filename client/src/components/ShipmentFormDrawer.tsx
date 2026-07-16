@@ -228,7 +228,7 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
 
   const inputClass = `w-full bg-white border border-slate-200/80 rounded-lg px-3 py-2 text-sm text-slate-700 outline-none transition-all duration-200 
     focus:border-blue-500/80 focus:ring-4 focus:ring-blue-500/10 disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed`;
-  const labelClass = "block text-[10px] font-bold text-slate-400 tracking-wider uppercase mb-1.5";
+  const labelClass = "block text-[10px] font-bold text-slate-400 tracking-widest uppercase mt-3 mb-2";
 
   const renderInput = (
     label: string, 
@@ -273,7 +273,7 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={onClose}
-              className="fixed inset-0 z-40 bg-slate-900/20 backdrop-blur-sm"
+              className="fixed inset-0 z-40 bg-slate-900/15 backdrop-blur-sm"
             />
 
             {/* Slide-out Panel */}
@@ -282,7 +282,7 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-slate-50 shadow-2xl flex flex-col border-l border-white/50"
+              className="fixed inset-y-0 right-0 z-50 w-full md:w-[40vw] min-w-[400px] bg-white shadow-2xl flex flex-col border-l border-slate-200/80"
             >
               {/* Header */}
               <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-slate-100">
@@ -309,7 +309,7 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
                 <form id="shipment-form" onSubmit={handleSubmit} className="space-y-8">
                   
                   {/* Status Field */}
-                  <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+                  <div className="space-y-2">
                     <label className={labelClass}>Shipment Status</label>
                     <select
                       value={formData.status}
@@ -323,61 +323,60 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
                     </select>
                   </div>
 
-                  {/* Section 1: Parties Involved */}
-                  <div className="space-y-4">
-                    <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wide border-b border-slate-200 pb-2">
-                      Parties & Tracking
+                  {/* Section 1: Logistics Parties & Tracking */}
+                  <div className="space-y-2 pt-2">
+                    <h3 className="text-sm font-semibold text-slate-800 mb-3 border-b border-slate-100 pb-2">
+                      Logistics Parties & Tracking
                     </h3>
-                    <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-x-4">
                       {renderInput('Shipper Name', 'shipperName', 'text', 'e.g. Acme Corp')}
                       {renderInput('Carrier Name', 'carrierName', 'text', 'e.g. Global Freight')}
-                      {renderInput('Tracking Number', 'trackingNumber', 'text', 'e.g. TRK-12345')}
+                      <div className="col-span-2">
+                        {renderInput('Tracking Number', 'trackingNumber', 'text', 'e.g. TRK-12345')}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Section 2: Logistics Route */}
-                  <div className="space-y-4">
-                    <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wide border-b border-slate-200 pb-2">
-                      Logistics Route
+                  {/* Section 2: Origin & Destination */}
+                  <div className="space-y-2 pt-2">
+                    <h3 className="text-sm font-semibold text-slate-800 mb-3 border-b border-slate-100 pb-2">
+                      Origin & Destination
                     </h3>
-                    
-                    {/* Origin */}
-                    <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm space-y-3">
-                      <h4 className="text-[10px] font-bold text-blue-500 uppercase tracking-wider">Origin</h4>
-                      {renderInput('Street Address', 'origin.address')}
-                      <div className="grid grid-cols-2 gap-3">
-                        {renderInput('City', 'origin.city')}
-                        {renderInput('State', 'origin.state')}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                      {/* Origin */}
+                      <div>
+                        <h4 className="text-[10px] font-bold text-blue-500 uppercase tracking-wider mb-2">Origin</h4>
+                        {renderInput('Street Address', 'origin.address')}
+                        <div className="grid grid-cols-2 gap-3">
+                          {renderInput('City', 'origin.city')}
+                          {renderInput('State', 'origin.state')}
+                        </div>
+                        {renderInput('ZIP Code', 'origin.zip')}
                       </div>
-                      {renderInput('ZIP / Postal Code', 'origin.zip')}
-                    </div>
 
-                    {/* Destination */}
-                    <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm space-y-3">
-                      <h4 className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Destination</h4>
-                      {renderInput('Street Address', 'destination.address')}
-                      <div className="grid grid-cols-2 gap-3">
-                        {renderInput('City', 'destination.city')}
-                        {renderInput('State', 'destination.state')}
+                      {/* Destination */}
+                      <div>
+                        <h4 className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider mb-2">Destination</h4>
+                        {renderInput('Street Address', 'destination.address')}
+                        <div className="grid grid-cols-2 gap-3">
+                          {renderInput('City', 'destination.city')}
+                          {renderInput('State', 'destination.state')}
+                        </div>
+                        {renderInput('ZIP Code', 'destination.zip')}
                       </div>
-                      {renderInput('ZIP / Postal Code', 'destination.zip')}
                     </div>
                   </div>
 
-                  {/* Section 3: Financials & Schedule */}
-                  <div className="space-y-4">
-                    <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wide border-b border-slate-200 pb-2">
-                      Financials & Schedule
+                  {/* Section 3: Financials & Dates */}
+                  <div className="space-y-2 pt-2">
+                    <h3 className="text-sm font-semibold text-slate-800 mb-3 border-b border-slate-100 pb-2">
+                      Financials & Dates
                     </h3>
-                    <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm space-y-3">
-                      <div className="grid grid-cols-2 gap-3">
-                        {renderInput('Base Rate ($)', 'rates.baseRate', 'number')}
-                        {renderInput('Fuel Surcharge ($)', 'rates.fuelSurcharge', 'number')}
-                      </div>
-                      <div className="grid grid-cols-2 gap-3 pt-2">
-                        {renderInput('Pickup Date', 'pickupDate', 'datetime-local')}
-                        {renderInput('Delivery Date', 'deliveryDate', 'datetime-local')}
-                      </div>
+                    <div className="grid grid-cols-2 gap-x-4">
+                      {renderInput('Base Rate ($)', 'rates.baseRate', 'number')}
+                      {renderInput('Fuel Surcharge ($)', 'rates.fuelSurcharge', 'number')}
+                      {renderInput('Pickup Date', 'pickupDate', 'datetime-local')}
+                      {renderInput('Delivery Date', 'deliveryDate', 'datetime-local')}
                     </div>
                   </div>
 
