@@ -62,8 +62,7 @@ function App() {
       <ShipmentFormDrawer
         isOpen={isDrawerOpen}
         onClose={handleCloseDrawer}
-        mode={drawerShipment ? 'edit' : 'create'}
-        initialData={drawerShipment || undefined}
+        selectedShipment={drawerShipment || null}
         userRole={userRole}
       />
     </>

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Save, Lock, Loader2, Check } from 'lucide-react';
+import { X, Save, Lock, Loader2, Check, RefreshCw } from 'lucide-react';
 import { useMutation } from '@apollo/client/react';
 import { CREATE_SHIPMENT_MUTATION, UPDATE_SHIPMENT_MUTATION } from '../graphql/mutations';
 import { GET_SHIPMENTS } from '../graphql/queries';
 
 export type UserRole = 'ADMIN' | 'EMPLOYEE';
-export type FormMode = 'create' | 'edit';
 
 interface ShipmentFormData {
   shipperName: string;
@@ -36,8 +35,7 @@ interface ShipmentFormData {
 interface ShipmentFormDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  mode: FormMode;
-  initialData?: Partial<ShipmentFormData> & { id?: string };
+  selectedShipment?: Partial<ShipmentFormData> & { id?: string } | null;
   userRole: UserRole;
   onSuccess?: () => void;
 }
@@ -57,85 +55,69 @@ const defaultFormData: ShipmentFormData = {
 export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
   isOpen,
   onClose,
-  mode,
-  initialData,
+  selectedShipment,
   userRole,
   onSuccess,
 }) => {
+  const mode = selectedShipment ? 'edit' : 'create';
   const [formData, setFormData] = useState<ShipmentFormData>(defaultFormData);
-  const [isSuccess, setIsSuccess] = useState(false);
+  
+  // State for the premium success feedback modal
+  const [successState, setSuccessState] = useState<{ show: boolean; type: 'create' | 'edit'; id: string }>({
+    show: false,
+    type: 'create',
+    id: ''
+  });
 
   const [createShipment, { loading: creating }] = useMutation<{ createShipment: any }>(CREATE_SHIPMENT_MUTATION, {
-    update(cache, { data }) {
-      if (!data?.createShipment) return;
-      const newShipment = data.createShipment;
-
-      try {
-        // 1. Read the current shipments list from the Apollo Cache
-        const cachedData: any = cache.readQuery({ query: GET_SHIPMENTS });
-        
-        // Handle edge-cases safely: Only update if the query exists in cache
-        if (cachedData && cachedData.shipments) {
-          
-          // 2. Merge the newly created shipment with the existing cached array
-          const newEdge = { 
-            __typename: 'ShipmentEdge', 
-            cursor: btoa(newShipment.id), 
-            node: newShipment 
-          };
-
-          // 3. Write the merged array back to the cache
-          cache.writeQuery({
-            query: GET_SHIPMENTS,
-            data: {
-              shipments: {
-                ...cachedData.shipments,
-                edges: [newEdge, ...cachedData.shipments.edges], // Prepend to top
-                totalCount: cachedData.shipments.totalCount + 1,
-              },
-            },
-          });
-        }
-      } catch (e) {
-        // Handle edge-case: If readQuery throws, the user hasn't visited the list yet
-        console.warn('GET_SHIPMENTS query not found in cache. Skipping manual cache update.');
-      }
+    refetchQueries: [{ query: GET_SHIPMENTS }],
+    onCompleted: (data) => {
+      const newId = data?.createShipment?.id || 'NEW';
+      handleSuccess('create', newId);
     },
-    onCompleted: () => handleSuccess(),
   });
 
   const [updateShipment, { loading: updating }] = useMutation(UPDATE_SHIPMENT_MUTATION, {
-    onCompleted: () => handleSuccess(),
+    onCompleted: (data) => {
+      const updatedId = data?.updateShipment?.id || selectedShipment?.id || 'UPDATED';
+      handleSuccess('edit', updatedId);
+    },
   });
 
   const isSubmitting = creating || updating;
 
-  const handleSuccess = () => {
-    setIsSuccess(true);
+  const handleSuccess = (type: 'create' | 'edit', id: string) => {
+    setSuccessState({ show: true, type, id });
     setTimeout(() => {
-      setIsSuccess(false);
+      setSuccessState((prev) => ({ ...prev, show: false }));
       onClose();
       if (onSuccess) onSuccess();
-    }, 800);
+    }, 3000); // 3 seconds auto-close
+  };
+
+  const closeSuccessModal = () => {
+    setSuccessState((prev) => ({ ...prev, show: false }));
+    onClose();
+    if (onSuccess) onSuccess();
   };
 
   useEffect(() => {
     if (isOpen) {
-      if (mode === 'edit' && initialData) {
+      if (selectedShipment) {
         setFormData({
           ...defaultFormData,
-          ...initialData,
-          pickupDate: initialData.pickupDate ? initialData.pickupDate.substring(0, 16) : '',
-          deliveryDate: initialData.deliveryDate ? initialData.deliveryDate.substring(0, 16) : '',
-          origin: { ...defaultFormData.origin, ...initialData.origin },
-          destination: { ...defaultFormData.destination, ...initialData.destination },
-          rates: { ...defaultFormData.rates, ...initialData.rates },
+          ...selectedShipment,
+          pickupDate: selectedShipment.pickupDate ? selectedShipment.pickupDate.substring(0, 16) : '',
+          deliveryDate: selectedShipment.deliveryDate ? selectedShipment.deliveryDate.substring(0, 16) : '',
+          origin: { ...defaultFormData.origin, ...selectedShipment.origin },
+          destination: { ...defaultFormData.destination, ...selectedShipment.destination },
+          rates: { ...defaultFormData.rates, ...selectedShipment.rates },
         });
       } else {
         setFormData(defaultFormData);
       }
     }
-  }, [isOpen, mode, initialData]);
+  }, [isOpen, selectedShipment]);
 
   const isEmployeeEdit = userRole === 'EMPLOYEE' && mode === 'edit';
 
@@ -188,12 +170,11 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
           }
         }
       });
-    } else if (mode === 'edit' && initialData?.id) {
-      // Build optimistic response
+    } else if (mode === 'edit' && selectedShipment?.id) {
       const optimisticResponse = {
         updateShipment: {
           __typename: 'Shipment',
-          id: initialData.id,
+          id: selectedShipment.id,
           status: formData.status,
           trackingNumber: formData.trackingNumber,
           rates: {
@@ -215,7 +196,7 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
       await updateShipment({
         variables: {
           input: {
-            id: initialData.id,
+            id: selectedShipment.id,
             shipperName: formData.shipperName,
             carrierName: formData.carrierName,
             trackingNumber: formData.trackingNumber,
@@ -249,7 +230,6 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
     focus:border-blue-500/80 focus:ring-4 focus:ring-blue-500/10 disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed`;
   const labelClass = "block text-[10px] font-bold text-slate-400 tracking-wider uppercase mb-1.5";
 
-  // A helper to render an input, properly disabling it and showing lock icons if needed.
   const renderInput = (
     label: string, 
     field: string, 
@@ -283,156 +263,196 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop Overlay */}
+    <>
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            {/* Backdrop Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={onClose}
+              className="fixed inset-0 z-40 bg-slate-900/20 backdrop-blur-sm"
+            />
+
+            {/* Slide-out Panel */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-slate-50 shadow-2xl flex flex-col border-l border-white/50"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-slate-100">
+                <div>
+                  <h2 className="text-lg font-bold text-slate-800">
+                    {mode === 'create' ? 'Create New Shipment' : 'Edit Shipment'}
+                  </h2>
+                  {isEmployeeEdit && (
+                    <p className="text-xs text-orange-500 font-medium mt-0.5 flex items-center gap-1">
+                      <Lock className="w-3 h-3" /> Employee access restricts editing to Status only
+                    </p>
+                  )}
+                </div>
+                <button 
+                  onClick={onClose}
+                  className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Scrollable Form Body */}
+              <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+                <form id="shipment-form" onSubmit={handleSubmit} className="space-y-8">
+                  
+                  {/* Status Field */}
+                  <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+                    <label className={labelClass}>Shipment Status</label>
+                    <select
+                      value={formData.status}
+                      onChange={(e) => handleChange('status', e.target.value)}
+                      className={inputClass}
+                    >
+                      <option value="PENDING">Pending</option>
+                      <option value="IN_TRANSIT">In Transit</option>
+                      <option value="DELIVERED">Delivered</option>
+                      <option value="EXCEPTION">Exception</option>
+                    </select>
+                  </div>
+
+                  {/* Section 1: Parties Involved */}
+                  <div className="space-y-4">
+                    <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wide border-b border-slate-200 pb-2">
+                      Parties & Tracking
+                    </h3>
+                    <div className="space-y-3">
+                      {renderInput('Shipper Name', 'shipperName', 'text', 'e.g. Acme Corp')}
+                      {renderInput('Carrier Name', 'carrierName', 'text', 'e.g. Global Freight')}
+                      {renderInput('Tracking Number', 'trackingNumber', 'text', 'e.g. TRK-12345')}
+                    </div>
+                  </div>
+
+                  {/* Section 2: Logistics Route */}
+                  <div className="space-y-4">
+                    <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wide border-b border-slate-200 pb-2">
+                      Logistics Route
+                    </h3>
+                    
+                    {/* Origin */}
+                    <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm space-y-3">
+                      <h4 className="text-[10px] font-bold text-blue-500 uppercase tracking-wider">Origin</h4>
+                      {renderInput('Street Address', 'origin.address')}
+                      <div className="grid grid-cols-2 gap-3">
+                        {renderInput('City', 'origin.city')}
+                        {renderInput('State', 'origin.state')}
+                      </div>
+                      {renderInput('ZIP / Postal Code', 'origin.zip')}
+                    </div>
+
+                    {/* Destination */}
+                    <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm space-y-3">
+                      <h4 className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Destination</h4>
+                      {renderInput('Street Address', 'destination.address')}
+                      <div className="grid grid-cols-2 gap-3">
+                        {renderInput('City', 'destination.city')}
+                        {renderInput('State', 'destination.state')}
+                      </div>
+                      {renderInput('ZIP / Postal Code', 'destination.zip')}
+                    </div>
+                  </div>
+
+                  {/* Section 3: Financials & Schedule */}
+                  <div className="space-y-4">
+                    <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wide border-b border-slate-200 pb-2">
+                      Financials & Schedule
+                    </h3>
+                    <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm space-y-3">
+                      <div className="grid grid-cols-2 gap-3">
+                        {renderInput('Base Rate ($)', 'rates.baseRate', 'number')}
+                        {renderInput('Fuel Surcharge ($)', 'rates.fuelSurcharge', 'number')}
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 pt-2">
+                        {renderInput('Pickup Date', 'pickupDate', 'datetime-local')}
+                        {renderInput('Delivery Date', 'deliveryDate', 'datetime-local')}
+                      </div>
+                    </div>
+                  </div>
+
+                </form>
+              </div>
+
+              {/* Footer */}
+              <div className="p-4 bg-white border-t border-slate-100 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  form="shipment-form"
+                  disabled={isSubmitting}
+                  className="px-5 py-2 flex items-center gap-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors focus:ring-4 focus:ring-blue-500/20 disabled:bg-blue-400 disabled:cursor-not-allowed w-40 justify-center"
+                >
+                  {isSubmitting ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4" />
+                      {mode === 'create' ? 'Create Shipment' : 'Save Changes'}
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Premium Success Feedback Modal */}
+      <AnimatePresence>
+        {successState.show && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 z-40 bg-slate-900/20 backdrop-blur-sm"
-          />
-
-          {/* Slide-out Panel */}
-          <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-slate-50 shadow-2xl flex flex-col border-l border-white/50"
+            className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-slate-100">
-              <div>
-                <h2 className="text-lg font-bold text-slate-800">
-                  {mode === 'create' ? 'Create New Shipment' : 'Edit Shipment'}
-                </h2>
-                {isEmployeeEdit && (
-                  <p className="text-xs text-orange-500 font-medium mt-0.5 flex items-center gap-1">
-                    <Lock className="w-3 h-3" /> Employee access restricts editing to Status only
-                  </p>
-                )}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col relative border border-slate-100"
+            >
+              <div className="p-6 pb-5 flex flex-col items-center text-center">
+                <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-4 ${successState.type === 'create' ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600'}`}>
+                  {successState.type === 'create' ? <Check className="w-7 h-7" /> : <RefreshCw className="w-7 h-7" />}
+                </div>
+                <h3 className="text-xl font-bold text-slate-800 mb-2">
+                  {successState.type === 'create' ? 'Shipment Created Successfully' : 'Shipment Updated'}
+                </h3>
+                <p className="text-sm text-slate-500 mb-6 px-2 leading-relaxed">
+                  {successState.type === 'create' 
+                    ? `Shipment #${successState.id} has been broadcasted to the carrier network.` 
+                    : `Changes to Shipment #${successState.id} have been successfully synced down to the data grid.`}
+                </p>
+                <button
+                  onClick={closeSuccessModal}
+                  className="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-colors"
+                >
+                  Dismiss
+                </button>
               </div>
-              <button 
-                onClick={onClose}
-                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Scrollable Form Body */}
-            <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
-              <form id="shipment-form" onSubmit={handleSubmit} className="space-y-8">
-                
-                {/* Status Field (Always editable except if we want creation to default to pending) */}
-                <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
-                  <label className={labelClass}>Shipment Status</label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => handleChange('status', e.target.value)}
-                    className={inputClass}
-                  >
-                    <option value="PENDING">Pending</option>
-                    <option value="IN_TRANSIT">In Transit</option>
-                    <option value="DELIVERED">Delivered</option>
-                    <option value="EXCEPTION">Exception</option>
-                  </select>
-                </div>
-
-                {/* Section 1: Parties Involved */}
-                <div className="space-y-4">
-                  <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wide border-b border-slate-200 pb-2">
-                    Parties & Tracking
-                  </h3>
-                  <div className="space-y-3">
-                    {renderInput('Shipper Name', 'shipperName', 'text', 'e.g. Acme Corp')}
-                    {renderInput('Carrier Name', 'carrierName', 'text', 'e.g. Global Freight')}
-                    {renderInput('Tracking Number', 'trackingNumber', 'text', 'e.g. TRK-12345')}
-                  </div>
-                </div>
-
-                {/* Section 2: Logistics Route */}
-                <div className="space-y-4">
-                  <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wide border-b border-slate-200 pb-2">
-                    Logistics Route
-                  </h3>
-                  
-                  {/* Origin */}
-                  <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm space-y-3">
-                    <h4 className="text-[10px] font-bold text-blue-500 uppercase tracking-wider">Origin</h4>
-                    {renderInput('Street Address', 'origin.address')}
-                    <div className="grid grid-cols-2 gap-3">
-                      {renderInput('City', 'origin.city')}
-                      {renderInput('State', 'origin.state')}
-                    </div>
-                    {renderInput('ZIP / Postal Code', 'origin.zip')}
-                  </div>
-
-                  {/* Destination */}
-                  <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm space-y-3">
-                    <h4 className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Destination</h4>
-                    {renderInput('Street Address', 'destination.address')}
-                    <div className="grid grid-cols-2 gap-3">
-                      {renderInput('City', 'destination.city')}
-                      {renderInput('State', 'destination.state')}
-                    </div>
-                    {renderInput('ZIP / Postal Code', 'destination.zip')}
-                  </div>
-                </div>
-
-                {/* Section 3: Financials & Schedule */}
-                <div className="space-y-4">
-                  <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wide border-b border-slate-200 pb-2">
-                    Financials & Schedule
-                  </h3>
-                  <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm space-y-3">
-                    <div className="grid grid-cols-2 gap-3">
-                      {renderInput('Base Rate ($)', 'rates.baseRate', 'number')}
-                      {renderInput('Fuel Surcharge ($)', 'rates.fuelSurcharge', 'number')}
-                    </div>
-                    <div className="grid grid-cols-2 gap-3 pt-2">
-                      {renderInput('Pickup Date', 'pickupDate', 'datetime-local')}
-                      {renderInput('Delivery Date', 'deliveryDate', 'datetime-local')}
-                    </div>
-                  </div>
-                </div>
-
-              </form>
-            </div>
-
-            {/* Footer */}
-            <div className="p-4 bg-white border-t border-slate-100 flex items-center justify-end gap-3">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                form="shipment-form"
-                disabled={isSubmitting || isSuccess}
-                className="px-5 py-2 flex items-center gap-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors focus:ring-4 focus:ring-blue-500/20 disabled:bg-blue-400 disabled:cursor-not-allowed w-40 justify-center"
-              >
-                {isSubmitting ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : isSuccess ? (
-                  <Check className="w-4 h-4 text-white" />
-                ) : (
-                  <>
-                    <Save className="w-4 h-4" />
-                    {mode === 'create' ? 'Create Shipment' : 'Save Changes'}
-                  </>
-                )}
-              </button>
-            </div>
+            </motion.div>
           </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
