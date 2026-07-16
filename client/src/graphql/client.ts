@@ -2,7 +2,8 @@ import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
 const httpLink = createHttpLink({
-  uri: import.meta.env.VITE_GRAPHQL_URL || 'http://localhost:4000/graphql',
+  // Dynamically uses Vite's environment variable injected at build/runtime
+  uri: import.meta.env.VITE_GRAPHQL_API_URL || 'http://localhost:4000/graphql',
 });
 
 const authLink = setContext((_, { headers }) => {
