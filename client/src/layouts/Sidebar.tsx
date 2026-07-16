@@ -67,15 +67,6 @@ const menuGroups: MenuGroup[] = [
   },
 ];
 
-const sidebarVariants = {
-  open: { x: 0, transition: { type: 'spring', stiffness: 300, damping: 30 } },
-  closed: { x: -320, transition: { type: 'spring', stiffness: 300, damping: 30 } },
-};
-
-const overlayVariants = {
-  open: { opacity: 1 },
-  closed: { opacity: 0 },
-};
 
 function MenuItemGroup({ group, isOpen }: { group: MenuGroup, isOpen: boolean }) {
   const [expanded, setExpanded] = useState(

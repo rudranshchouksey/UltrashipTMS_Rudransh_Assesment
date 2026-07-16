@@ -281,7 +281,7 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
     placeholder: string = '', 
     disabledOverride: boolean = false
   ) => {
-    const value = field.split('.').reduce((o, i) => (o as any)[i], formData);
+    const value = field.split('.').reduce((o: any, i) => o[i], formData) as string | number;
     const isLocked = disabledOverride || isEmployeeEdit;
     const errorMsg = errors[field];
     

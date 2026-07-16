@@ -4,7 +4,7 @@ import ShipmentsPage from './views/ShipmentsPage';
 import { mockShipments } from './data/mockShipments';
 import type { ViewMode, UserRole, Shipment } from './types';
 import { ShipmentFormDrawer } from './components/ShipmentFormDrawer';
-import { ConnectionCheck } from './components/ConnectionCheck';
+
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
@@ -66,7 +66,6 @@ function App() {
         selectedShipment={drawerShipment || null}
         userRole={userRole}
       />
-      <ConnectionCheck />
     </>
   );
 }
