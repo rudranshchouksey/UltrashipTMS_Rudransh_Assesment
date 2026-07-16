@@ -41,10 +41,12 @@ export class ShipmentService {
     }
 
     // Apply Sorting
-    if (orderBy) {
+    const activeOrderBy = orderBy || { field: 'createdAt', direction: SortDirection.DESC };
+
+    if (activeOrderBy) {
       result.sort((a, b) => {
         let valA: any, valB: any;
-        switch (orderBy.field) {
+        switch (activeOrderBy.field) {
           case 'id':
             valA = a.id;
             valB = b.id;
@@ -52,6 +54,10 @@ export class ShipmentService {
           case 'pickupDate':
             valA = new Date(a.pickupDate).getTime();
             valB = new Date(b.pickupDate).getTime();
+            break;
+          case 'createdAt':
+            valA = new Date(a.createdAt).getTime();
+            valB = new Date(b.createdAt).getTime();
             break;
           case 'status':
             valA = a.status;
@@ -71,13 +77,13 @@ export class ShipmentService {
         if (typeof valA === 'string' && typeof valB === 'string') {
           const comparison = valA.localeCompare(valB);
           if (comparison !== 0) {
-            return orderBy.direction === SortDirection.ASC ? comparison : -comparison;
+            return activeOrderBy.direction === SortDirection.ASC ? comparison : -comparison;
           }
         } 
         // Handle numeric/date comparison
         else {
-          if (valA < valB) return orderBy.direction === SortDirection.ASC ? -1 : 1;
-          if (valA > valB) return orderBy.direction === SortDirection.ASC ? 1 : -1;
+          if (valA < valB) return activeOrderBy.direction === SortDirection.ASC ? -1 : 1;
+          if (valA > valB) return activeOrderBy.direction === SortDirection.ASC ? 1 : -1;
         }
         
         return 0;

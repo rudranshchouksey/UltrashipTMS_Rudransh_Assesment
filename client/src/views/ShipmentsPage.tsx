@@ -27,7 +27,7 @@ export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, 
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
 
   // Sort State Configuration
-  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'ASC' | 'DESC' | null }>({ key: 'id', direction: 'ASC' });
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'ASC' | 'DESC' | null }>({ key: 'createdAt', direction: 'DESC' });
 
   // 4. Data Array Manipulation (Server-side filter and sort payload)
   const { data } = useQuery<any>(GET_SHIPMENTS, {

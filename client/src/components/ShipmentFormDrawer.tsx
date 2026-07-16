@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Save, Lock, Loader2, Check, RefreshCw, ChevronDown } from 'lucide-react';
-import { useMutation } from '@apollo/client/react';
+import { useMutation, gql } from '@apollo/client';
 import { CREATE_SHIPMENT_MUTATION, UPDATE_SHIPMENT_MUTATION } from '../graphql/mutations';
 import { GET_SHIPMENTS } from '../graphql/queries';
 
@@ -72,7 +72,39 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
   });
 
   const [createShipment, { loading: creating }] = useMutation<{ createShipment: any }>(CREATE_SHIPMENT_MUTATION, {
-    refetchQueries: [{ query: GET_SHIPMENTS }],
+    update(cache, { data }) {
+      if (!data?.createShipment) return;
+      cache.modify({
+        fields: {
+          shipments(existingShipments = {}) {
+            const newShipmentRef = cache.writeFragment({
+              data: data.createShipment,
+              fragment: gql`
+                fragment NewShipmentFragment on Shipment {
+                  id
+                  status
+                  trackingNumber
+                  rates { baseRate fuelSurcharge totalRate }
+                  pickupDate
+                  deliveryDate
+                  createdAt
+                  updatedAt
+                  shipper { id name contactEmail phone }
+                  carrier { id name scacCode contactEmail }
+                  origin { address city state zip geo { latitude longitude } }
+                  destination { address city state zip geo { latitude longitude } }
+                }
+              `
+            });
+            const newEdge = { __typename: 'ShipmentEdge', cursor: btoa(data.createShipment.id), node: newShipmentRef };
+            return {
+              ...existingShipments,
+              edges: [newEdge, ...(existingShipments.edges || [])]
+            };
+          }
+        }
+      });
+    },
     onCompleted: (data) => {
       const newId = data?.createShipment?.id || 'NEW';
       handleSuccess('create', newId);
