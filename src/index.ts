@@ -26,6 +26,14 @@ async function startServer() {
 
   await server.start();
 
+  // Diagnostic Middleware for CORS and Preflight checks
+  app.use((req, res, next) => {
+    if (req.method === 'OPTIONS' || req.headers.origin) {
+      console.log(`[Diagnostic CORS] ${req.method} ${req.url} | Origin: ${req.headers.origin || 'None'}`);
+    }
+    next();
+  });
+
   app.use(
     '/graphql',
     cors<cors.CorsRequest>(),
