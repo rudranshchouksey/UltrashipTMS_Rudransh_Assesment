@@ -1,14 +1,14 @@
 import { shipments } from '../db/mockDb.js';
-import { Shipment, ShipmentStatus, SortDirection, ShipmentSortField } from '../types/index.js';
+import { Shipment, ShipmentStatus, SortDirection } from '../types/index.js';
 
 interface FilterInput {
-  status?: ShipmentStatus[];
+  status?: string[];
   carrierId?: string;
   pickupDateRange?: { start: string; end: string };
 }
 
 interface SortInput {
-  field: ShipmentSortField;
+  field: string;
   direction: SortDirection;
 }
 
@@ -17,14 +17,15 @@ export class ShipmentService {
     first = 10,
     after?: string,
     filter?: FilterInput,
-    sort?: SortInput[]
+    orderBy?: SortInput
   ) {
     let result = [...shipments];
 
     // Apply Filters
     if (filter) {
       if (filter.status && filter.status.length > 0) {
-        result = result.filter((s) => filter.status!.includes(s.status));
+        // Handle exact status string match mapping to enum internally
+        result = result.filter((s) => filter.status!.includes(s.status as string));
       }
       if (filter.carrierId) {
         result = result.filter((s) => s.carrierId === filter.carrierId);
@@ -40,32 +41,45 @@ export class ShipmentService {
     }
 
     // Apply Sorting
-    if (sort && sort.length > 0) {
+    if (orderBy) {
       result.sort((a, b) => {
-        for (const s of sort) {
-          let valA: any, valB: any;
-          switch (s.field) {
-            case ShipmentSortField.PICKUP_DATE:
-              valA = new Date(a.pickupDate).getTime();
-              valB = new Date(b.pickupDate).getTime();
-              break;
-            case ShipmentSortField.DELIVERY_DATE:
-              valA = a.deliveryDate ? new Date(a.deliveryDate).getTime() : 0;
-              valB = b.deliveryDate ? new Date(b.deliveryDate).getTime() : 0;
-              break;
-            case ShipmentSortField.STATUS:
-              valA = a.status;
-              valB = b.status;
-              break;
-            case ShipmentSortField.TOTAL_RATE:
-              valA = a.rates.totalRate;
-              valB = b.rates.totalRate;
-              break;
-          }
-
-          if (valA < valB) return s.direction === SortDirection.ASC ? -1 : 1;
-          if (valA > valB) return s.direction === SortDirection.ASC ? 1 : -1;
+        let valA: any, valB: any;
+        switch (orderBy.field) {
+          case 'id':
+            valA = a.id;
+            valB = b.id;
+            break;
+          case 'pickupDate':
+            valA = new Date(a.pickupDate).getTime();
+            valB = new Date(b.pickupDate).getTime();
+            break;
+          case 'status':
+            valA = a.status;
+            valB = b.status;
+            break;
+          case 'rate':
+            valA = a.rates.totalRate;
+            valB = b.rates.totalRate;
+            break;
+          default:
+            valA = a.id;
+            valB = b.id;
+            break;
         }
+
+        // Handle string comparison (alphanumeric sorting)
+        if (typeof valA === 'string' && typeof valB === 'string') {
+          const comparison = valA.localeCompare(valB);
+          if (comparison !== 0) {
+            return orderBy.direction === SortDirection.ASC ? comparison : -comparison;
+          }
+        } 
+        // Handle numeric/date comparison
+        else {
+          if (valA < valB) return orderBy.direction === SortDirection.ASC ? -1 : 1;
+          if (valA > valB) return orderBy.direction === SortDirection.ASC ? 1 : -1;
+        }
+        
         return 0;
       });
     }

@@ -5,9 +5,9 @@ export const GET_SHIPMENTS = gql`
     $first: Int
     $after: String
     $filter: ShipmentFilterInput
-    $sort: [ShipmentSortInput!]
+    $orderBy: ShipmentSortInput
   ) {
-    shipments(first: $first, after: $after, filter: $filter, sort: $sort) {
+    shipments(first: $first, after: $after, filter: $filter, orderBy: $orderBy) {
       totalCount
       pageInfo {
         hasNextPage

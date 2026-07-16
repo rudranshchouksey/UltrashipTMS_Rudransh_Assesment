@@ -30,13 +30,11 @@ export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, 
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'ASC' | 'DESC' | null }>({ key: 'id', direction: 'ASC' });
 
   // 4. Data Array Manipulation (Server-side filter and sort payload)
-  // Mapping sortConfig into the Apollo query variables. 
-  // (Note: adapted from requested `orderBy` to match the existing `$sort` input defined in GET_SHIPMENTS)
   const { data } = useQuery<any>(GET_SHIPMENTS, {
     variables: { 
       first: 50,
       ...(statusFilter ? { filter: { status: statusFilter } } : {}),
-      ...(sortConfig.direction ? { sort: [{ field: sortConfig.key, direction: sortConfig.direction }] } : {})
+      ...(sortConfig.direction ? { orderBy: { field: sortConfig.key, direction: sortConfig.direction } } : {})
     },
     fetchPolicy: 'cache-and-network'
   });

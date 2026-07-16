@@ -16,12 +16,6 @@ export const typeDefs = `#graphql
     DESC
   }
 
-  enum ShipmentSortField {
-    PICKUP_DATE
-    DELIVERY_DATE
-    STATUS
-    TOTAL_RATE
-  }
 
   type GeoCoordinate {
     latitude: Float!
@@ -101,7 +95,7 @@ export const typeDefs = `#graphql
   }
 
   input ShipmentSortInput {
-    field: ShipmentSortField!
+    field: String!
     direction: SortDirection!
   }
 
@@ -112,7 +106,7 @@ export const typeDefs = `#graphql
       first: Int
       after: String
       filter: ShipmentFilterInput
-      sort: [ShipmentSortInput!]
+      orderBy: ShipmentSortInput
     ): ShipmentConnection!
   }
 

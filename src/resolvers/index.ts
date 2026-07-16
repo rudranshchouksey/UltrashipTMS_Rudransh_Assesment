@@ -18,11 +18,11 @@ export const resolvers = {
     },
     shipments: async (
       _: any,
-      { first, after, filter, sort }: any,
+      { first, after, filter, orderBy }: any,
       context: GraphQLContext
     ) => {
       requireAuth(context.user);
-      return await ShipmentService.getShipments(first, after, filter, sort);
+      return await ShipmentService.getShipments(first, after, filter, orderBy);
     },
   },
   
