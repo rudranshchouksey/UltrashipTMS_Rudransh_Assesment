@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Save, Lock, Loader2, Check, RefreshCw } from 'lucide-react';
+import { X, Save, Lock, Loader2, Check, RefreshCw, ChevronDown } from 'lucide-react';
 import { useMutation } from '@apollo/client/react';
 import { CREATE_SHIPMENT_MUTATION, UPDATE_SHIPMENT_MUTATION } from '../graphql/mutations';
 import { GET_SHIPMENTS } from '../graphql/queries';
@@ -61,6 +61,7 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
 }) => {
   const mode = selectedShipment ? 'edit' : 'create';
   const [formData, setFormData] = useState<ShipmentFormData>(defaultFormData);
+  const [statusOpen, setStatusOpen] = useState(false);
   
   // State for the premium success feedback modal
   const [successState, setSuccessState] = useState<{ show: boolean; type: 'create' | 'edit'; id: string }>({
@@ -226,8 +227,8 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
     }
   };
 
-  const inputClass = `w-full bg-white border border-slate-200/80 rounded-lg px-3 py-2 text-sm text-slate-700 outline-none transition-all duration-200 
-    focus:border-blue-500/80 focus:ring-4 focus:ring-blue-500/10 disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed`;
+  const inputClass = `w-full bg-white border border-slate-200/80 hover:border-slate-300 rounded-lg px-4 py-2.5 text-sm text-slate-900 outline-none transition-all duration-150 
+    focus:border-blue-500/90 focus:ring-4 focus:ring-blue-500/10 disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed`;
   const labelClass = "block text-[10px] font-bold text-slate-400 tracking-widest uppercase mt-3 mb-2";
 
   const renderInput = (
@@ -309,18 +310,58 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
                 <form id="shipment-form" onSubmit={handleSubmit} className="space-y-8">
                   
                   {/* Status Field */}
-                  <div className="space-y-2">
+                  <div className="space-y-2 relative z-50">
                     <label className={labelClass}>Shipment Status</label>
-                    <select
-                      value={formData.status}
-                      onChange={(e) => handleChange('status', e.target.value)}
-                      className={inputClass}
+                    <button
+                      type="button"
+                      onClick={() => setStatusOpen(!statusOpen)}
+                      className={`${inputClass} flex items-center justify-between text-left relative z-20`}
                     >
-                      <option value="PENDING">Pending</option>
-                      <option value="IN_TRANSIT">In Transit</option>
-                      <option value="DELIVERED">Delivered</option>
-                      <option value="EXCEPTION">Exception</option>
-                    </select>
+                      <span className="flex items-center gap-2 font-medium">
+                        {formData.status === 'PENDING' && <span className="w-2 h-2 rounded-full bg-amber-400" />}
+                        {formData.status === 'IN_TRANSIT' && <span className="w-2 h-2 rounded-full bg-blue-500" />}
+                        {formData.status === 'DELIVERED' && <span className="w-2 h-2 rounded-full bg-emerald-500" />}
+                        {formData.status === 'EXCEPTION' && <span className="w-2 h-2 rounded-full bg-rose-500" />}
+                        {formData.status.replace('_', ' ')}
+                      </span>
+                      <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${statusOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    
+                    <AnimatePresence>
+                      {statusOpen && (
+                        <>
+                          {/* Invisible backdrop to capture outside clicks */}
+                          <div className="fixed inset-0 z-30" onClick={() => setStatusOpen(false)} />
+                          <motion.div
+                            initial={{ opacity: 0, y: -5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -5 }}
+                            transition={{ duration: 0.15 }}
+                            className="absolute top-[calc(100%+4px)] left-0 right-0 z-40 bg-white border border-slate-200/80 rounded-lg shadow-xl overflow-hidden py-1"
+                          >
+                            {[
+                              { value: 'PENDING', label: 'Pending', dot: 'bg-amber-400' },
+                              { value: 'IN_TRANSIT', label: 'In Transit', dot: 'bg-blue-500' },
+                              { value: 'DELIVERED', label: 'Delivered', dot: 'bg-emerald-500' },
+                              { value: 'EXCEPTION', label: 'Exception', dot: 'bg-rose-500' }
+                            ].map(s => (
+                              <button
+                                key={s.value}
+                                type="button"
+                                onClick={() => {
+                                  handleChange('status', s.value);
+                                  setStatusOpen(false);
+                                }}
+                                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                              >
+                                <span className={`w-2.5 h-2.5 rounded-full ${s.dot}`} />
+                                <span className="font-medium">{s.label}</span>
+                              </button>
+                            ))}
+                          </motion.div>
+                        </>
+                      )}
+                    </AnimatePresence>
                   </div>
 
                   {/* Section 1: Logistics Parties & Tracking */}
