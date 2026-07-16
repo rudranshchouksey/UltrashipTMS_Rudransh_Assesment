@@ -14,6 +14,10 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+app.get('/', (req, res) => {
+  res.send('Ultraship TMS GraphQL API is running. Access /graphql to use the API.');
+});
+
 async function startServer() {
   const server = new ApolloServer<GraphQLContext>({
     typeDefs,
