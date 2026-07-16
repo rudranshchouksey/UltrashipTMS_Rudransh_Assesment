@@ -27,8 +27,8 @@ async function startServer() {
     cors<cors.CorsRequest>(),
     express.json(),
     expressMiddleware(server, {
-      context: getContext,
-    })
+      context: getContext as any,
+    }) as unknown as express.RequestHandler
   );
 
   app.listen(PORT, () => {
