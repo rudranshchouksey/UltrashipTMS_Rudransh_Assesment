@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Save, Lock, Loader2, Check, RefreshCw, ChevronDown } from 'lucide-react';
-import { useMutation, gql } from '@apollo/client';
+import { gql } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
 import { CREATE_SHIPMENT_MUTATION, UPDATE_SHIPMENT_MUTATION } from '../graphql/mutations';
 import { GET_SHIPMENTS } from '../graphql/queries';
 
