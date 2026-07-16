@@ -62,6 +62,7 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
   const mode = selectedShipment ? 'edit' : 'create';
   const [formData, setFormData] = useState<ShipmentFormData>(defaultFormData);
   const [statusOpen, setStatusOpen] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   
   // State for the premium success feedback modal
   const [successState, setSuccessState] = useState<{ show: boolean; type: 'create' | 'edit'; id: string }>({
@@ -141,6 +142,15 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
+
+    if (!formData.shipperName || !formData.carrierName || !formData.trackingNumber) {
+      const newErrors: Record<string, string> = {};
+      if (!formData.shipperName) newErrors['shipperName'] = 'Shipper Name is required';
+      if (!formData.carrierName) newErrors['carrierName'] = 'Carrier Name is required';
+      if (!formData.trackingNumber) newErrors['trackingNumber'] = 'Tracking Number is required';
+      setErrors(newErrors);
+      return;
+    }
 
     if (mode === 'create') {
       await createShipment({
@@ -239,26 +249,48 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
     disabledOverride: boolean = false
   ) => {
     const value = field.split('.').reduce((o, i) => (o as any)[i], formData);
-    const isDisabled = disabledOverride || isEmployeeEdit;
+    const isLocked = disabledOverride || isEmployeeEdit;
+    const errorMsg = errors[field];
     
     return (
-      <div className="relative flex flex-col">
+      <div className="relative flex flex-col group/input">
         <label className={labelClass}>{label}</label>
-        <div className="relative">
+        <div className="relative group/tooltip">
           <input
             type={type}
             value={value}
-            onChange={(e) => handleChange(field, type === 'number' ? parseFloat(e.target.value) || 0 : e.target.value)}
-            disabled={isDisabled}
+            onChange={(e) => {
+              handleChange(field, type === 'number' ? parseFloat(e.target.value) || 0 : e.target.value);
+              if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }));
+            }}
+            disabled={isLocked}
             placeholder={placeholder}
-            className={inputClass}
+            className={`${inputClass} ${errorMsg ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-500/10' : ''} ${isLocked ? 'bg-slate-50 text-slate-400' : ''}`}
           />
-          {isDisabled && isEmployeeEdit && (
-            <div className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-300 group" title="Employees cannot modify this field">
-              <Lock className="w-3.5 h-3.5" />
-            </div>
+          {isLocked && isEmployeeEdit && (
+            <>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                <Lock className="w-4 h-4" />
+              </div>
+              <div className="absolute opacity-0 group-hover/tooltip:opacity-100 pointer-events-none transition-opacity bottom-full right-0 mb-2 w-max max-w-[200px] px-3 py-2 bg-slate-800 text-white text-[11px] rounded-lg shadow-xl z-50 text-center">
+                Admins only. Contact support to modify locked data.
+                <div className="absolute top-full right-4 -mt-1 w-2 h-2 bg-slate-800 rotate-45" />
+              </div>
+            </>
           )}
         </div>
+        <AnimatePresence>
+          {errorMsg && (
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="text-[11px] text-rose-500 font-medium mt-1.5"
+            >
+              {errorMsg}
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
     );
   };
@@ -282,7 +314,7 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              transition={{ type: "spring", stiffness: 400, damping: 40 }}
               className="fixed inset-y-0 right-0 z-50 w-full md:w-[40vw] min-w-[400px] bg-white shadow-2xl flex flex-col border-l border-slate-200/80"
             >
               {/* Header */}
@@ -425,11 +457,11 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
               </div>
 
               {/* Footer */}
-              <div className="p-4 bg-white border-t border-slate-100 flex items-center justify-end gap-3">
+              <div className="sticky bottom-0 z-10 bg-white border-t border-slate-200/80 p-5 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2.5 rounded-lg transition-colors"
                 >
                   Cancel
                 </button>
@@ -437,7 +469,7 @@ export const ShipmentFormDrawer: React.FC<ShipmentFormDrawerProps> = ({
                   type="submit"
                   form="shipment-form"
                   disabled={isSubmitting}
-                  className="px-5 py-2 flex items-center gap-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors focus:ring-4 focus:ring-blue-500/20 disabled:bg-blue-400 disabled:cursor-not-allowed w-40 justify-center"
+                  className="bg-blue-600 text-white font-medium px-6 py-2.5 rounded-lg hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150 flex items-center gap-2 justify-center disabled:bg-blue-400 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
