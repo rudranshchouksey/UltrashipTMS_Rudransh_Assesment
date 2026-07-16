@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { MapPin, ExternalLink, Copy, Pencil } from 'lucide-react';
+import { MapPin, ExternalLink, Copy, Pencil, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 import type { Shipment } from '../types';
 import StatusBadge from './StatusBadge';
 
@@ -7,17 +7,19 @@ interface DataGridProps {
   shipments: Shipment[];
   onSelectShipment: (shipment: Shipment) => void;
   onEditShipment: (shipment: Shipment) => void;
+  sortConfig?: { key: string; direction: 'ASC' | 'DESC' | null };
+  onSortChange?: (key: string) => void;
 }
 
 const columns = [
-  { key: 'id', label: 'Shipment ID', width: 'w-[140px]', align: 'text-left' },
+  { key: 'id', label: 'Shipment ID', width: 'w-[140px]', align: 'text-left', sortable: true },
   { key: 'status', label: 'Status', width: 'w-[120px]', align: 'text-left' },
   { key: 'shipper', label: 'Shipper', width: 'w-[160px]', align: 'text-left' },
   { key: 'carrier', label: 'Carrier', width: 'w-[150px]', align: 'text-left' },
   { key: 'origin', label: 'Origin', width: 'w-[170px]', align: 'text-left' },
   { key: 'destination', label: 'Destination', width: 'w-[170px]', align: 'text-left' },
-  { key: 'rate', label: 'Total Rate', width: 'w-[110px]', align: 'text-right' },
-  { key: 'pickupDate', label: 'Pickup Date', width: 'w-[120px]', align: 'text-left' },
+  { key: 'rate', label: 'Total Rate', width: 'w-[110px]', align: 'text-right', sortable: true },
+  { key: 'pickupDate', label: 'Pickup Date', width: 'w-[120px]', align: 'text-left', sortable: true },
   { key: 'tracking', label: 'Tracking #', width: 'w-[130px]', align: 'text-left' },
   { key: 'actions', label: '', width: 'w-[60px]', align: 'text-right' },
 ];
@@ -34,7 +36,7 @@ function truncateId(id: string): string {
   return id.split('-')[0].toUpperCase();
 }
 
-export default function DataGrid({ shipments, onSelectShipment, onEditShipment }: DataGridProps) {
+export default function DataGrid({ shipments, onSelectShipment, onEditShipment, sortConfig, onSortChange }: DataGridProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
@@ -43,7 +45,7 @@ export default function DataGrid({ shipments, onSelectShipment, onEditShipment }
       transition={{ duration: 0.2 }}
       className="rounded-xl bg-white border border-slate-200/80 shadow-sm overflow-hidden"
     >
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto custom-scrollbar">
         <table className="w-full min-w-[1200px]">
           {/* Sticky Header */}
           <thead className="bg-slate-50/80 border-b border-slate-200">
@@ -53,7 +55,25 @@ export default function DataGrid({ shipments, onSelectShipment, onEditShipment }
                   key={col.key}
                   className={`sticky top-0 z-10 px-6 py-3.5 text-[11px] font-bold uppercase tracking-wider text-slate-400 ${col.width} ${col.align}`}
                 >
-                  {col.label}
+                  {col.sortable ? (
+                    <button 
+                      onClick={() => onSortChange?.(col.key)}
+                      className={`flex items-center gap-1.5 hover:text-slate-800 transition-colors w-full group ${col.align === 'text-right' ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <span>{col.label}</span>
+                      {sortConfig?.key === col.key && sortConfig.direction === 'ASC' && (
+                        <ArrowUp className="w-3.5 h-3.5 text-blue-600" />
+                      )}
+                      {sortConfig?.key === col.key && sortConfig.direction === 'DESC' && (
+                        <ArrowDown className="w-3.5 h-3.5 text-blue-600" />
+                      )}
+                      {(!sortConfig || sortConfig.key !== col.key || !sortConfig.direction) && (
+                        <ArrowUpDown className="w-3.5 h-3.5 text-slate-300 group-hover:text-slate-400 transition-colors" />
+                      )}
+                    </button>
+                  ) : (
+                    <span>{col.label}</span>
+                  )}
                 </th>
               ))}
             </tr>

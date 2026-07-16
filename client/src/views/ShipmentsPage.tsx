@@ -26,11 +26,17 @@ export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, 
   // 1. Filter State Setup
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
 
-  // 4. Data Array Manipulation (Server-side filter payload)
+  // Sort State Configuration
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'ASC' | 'DESC' | null }>({ key: 'id', direction: 'ASC' });
+
+  // 4. Data Array Manipulation (Server-side filter and sort payload)
+  // Mapping sortConfig into the Apollo query variables. 
+  // (Note: adapted from requested `orderBy` to match the existing `$sort` input defined in GET_SHIPMENTS)
   const { data } = useQuery<any>(GET_SHIPMENTS, {
     variables: { 
       first: 50,
-      ...(statusFilter ? { filter: { status: statusFilter } } : {})
+      ...(statusFilter ? { filter: { status: statusFilter } } : {}),
+      ...(sortConfig.direction ? { sort: [{ field: sortConfig.key, direction: sortConfig.direction }] } : {})
     },
     fetchPolicy: 'cache-and-network'
   });
@@ -58,6 +64,17 @@ export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, 
 
   const handleCloseDetail = useCallback(() => {
     setSelectedShipment(null);
+  }, []);
+
+  const handleSortChange = useCallback((key: string) => {
+    setSortConfig(prev => {
+      if (prev.key === key) {
+        if (prev.direction === 'ASC') return { key, direction: 'DESC' };
+        if (prev.direction === 'DESC') return { key, direction: null };
+        return { key, direction: 'ASC' };
+      }
+      return { key, direction: 'ASC' };
+    });
   }, []);
 
   // For the KPI cards, we preferably want to show the total numbers regardless of the active filter
@@ -124,6 +141,7 @@ export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, 
           <EmptyState key="empty" onClearFilters={() => {
             onClearFilters();
             setStatusFilter(null);
+            setSortConfig({ key: 'id', direction: 'ASC' });
           }} />
         ) : viewMode === 'grid' ? (
           <DataGrid
@@ -131,6 +149,8 @@ export default function ShipmentsPage({ shipments: fallbackShipments, viewMode, 
             shipments={shipments}
             onSelectShipment={handleSelectShipment}
             onEditShipment={onEditShipment}
+            sortConfig={sortConfig}
+            onSortChange={handleSortChange}
           />
         ) : (
           <TileGrid
